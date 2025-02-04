@@ -125,11 +125,11 @@
                 <form id="addEditUomForm">
                     <input type="hidden" id="conversionId" name="id">
                     <div class="mb-3">
-                        <label for="conversionName" class="form-label">Name</label>
+                        <label for="conversionName" class="form-label">Name <small class="text-danger fw-semibold" >*start to end conversion</small> </label>
                         <input type="text" class="form-control" id="conversionName" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="conversionUomStart" class="form-label">UoM Start</label>
+                        <label for="conversionUomStart" class="form-label">UoM Start <small class="text-danger fw-semibold" >*make the largest unit</small></label>
                         <select class="form-select" id="conversionUomStart" name="master_uom_start" required>
                             <option value="">Select UoM Start</option>
                             <?php $v134030822742616319101iterator = $uoms; $v134030822742616319101incr = 0; $v134030822742616319101loop = new stdClass(); $v134030822742616319101loop->self = &$v134030822742616319101loop; $v134030822742616319101loop->length = count($v134030822742616319101iterator); $v134030822742616319101loop->index = 1; $v134030822742616319101loop->index0 = 1; $v134030822742616319101loop->revindex = $v134030822742616319101loop->length; $v134030822742616319101loop->revindex0 = $v134030822742616319101loop->length - 1; ?><?php foreach ($v134030822742616319101iterator as $uom) { ?><?php $v134030822742616319101loop->first = ($v134030822742616319101incr == 0); $v134030822742616319101loop->index = $v134030822742616319101incr + 1; $v134030822742616319101loop->index0 = $v134030822742616319101incr; $v134030822742616319101loop->revindex = $v134030822742616319101loop->length - $v134030822742616319101incr; $v134030822742616319101loop->revindex0 = $v134030822742616319101loop->length - ($v134030822742616319101incr + 1); $v134030822742616319101loop->last = ($v134030822742616319101incr == ($v134030822742616319101loop->length - 1)); ?>
@@ -138,10 +138,9 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="conversionUomEnd" class="form-label
-                        ">UoM End</label>
+                        <label for="conversionUomEnd" class="form-label">UoM End <small class="text-danger fw-semibold" >*make the smallest unit</small></label>
                         <select class="form-select" id="conversionUomEnd" name="master_uom_end" required>
-                            <option value="">Select UoM End</option>
+                            <option value="">Select UoM End  </option>
                             <?php $v134030822742616319101iterator = $uoms; $v134030822742616319101incr = 0; $v134030822742616319101loop = new stdClass(); $v134030822742616319101loop->self = &$v134030822742616319101loop; $v134030822742616319101loop->length = count($v134030822742616319101iterator); $v134030822742616319101loop->index = 1; $v134030822742616319101loop->index0 = 1; $v134030822742616319101loop->revindex = $v134030822742616319101loop->length; $v134030822742616319101loop->revindex0 = $v134030822742616319101loop->length - 1; ?><?php foreach ($v134030822742616319101iterator as $uom) { ?><?php $v134030822742616319101loop->first = ($v134030822742616319101incr == 0); $v134030822742616319101loop->index = $v134030822742616319101incr + 1; $v134030822742616319101loop->index0 = $v134030822742616319101incr; $v134030822742616319101loop->revindex = $v134030822742616319101loop->length - $v134030822742616319101incr; $v134030822742616319101loop->revindex0 = $v134030822742616319101loop->length - ($v134030822742616319101incr + 1); $v134030822742616319101loop->last = ($v134030822742616319101incr == ($v134030822742616319101loop->length - 1)); ?>
                             <option value="<?= $uom->id ?>"><?= $uom->name ?></option>
                             <?php $v134030822742616319101incr++; } ?>
@@ -149,7 +148,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="conversionValue" class="form-label
-                        ">Conversion Value</label>
+                        ">Conversion Value <small class="text-danger fw-semibold" >*50 covert to 1 largest UoM = 50 smallest UoM</small> </label>
                         <input type="number" class="form-control" id="conversionValue" name="conversion" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>

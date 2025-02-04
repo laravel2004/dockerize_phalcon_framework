@@ -207,18 +207,12 @@
                                 {% endfor %}
                             </select>
                         </div>
-
                         <div class="mb-3">
-                            <label for="itemNeeded" class="form-label">Item Needed</label>
-                            <input name="item_needed" type="text" class="form-control" id="itemNeeded" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="plotId" class="form-label">UoM</label>
+                            <label for="uom" class="form-label">UoM</label>
                             <select name="uom" class="form-control" id="uom" required>
-                                <option value="">Select Plot Code</option>
+                                <option value="">Select UoM Conversion</option>
                                 {% for uom in uoms %}
-                                    <option value="{{ uom.id }}">
+                                    <option data-uom-setting="{{ uom.uom_end.name }}" value="{{ uom.id }}">
                                         {{ uom.name }}
                                     </option>
                                 {% endfor %}
@@ -226,7 +220,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="date" class="form-label">Date</label>
+                            <label for="itemNeeded" class="form-label">Item Needed <small class="text-danger fw-semibold" >*UoM units follow below</small> </label>
+                            <div class="input-group">
+                                <input name="item_needed" type="text" class="form-control" id="itemNeeded" required>
+                                <span class="input-group-text input-group-item-needed">NULL</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date <small class="text-danger fw-semibold" >*date of use</small> </label>
                             <input name="date" type="date" class="form-control" id="date" required>
                         </div>
 
@@ -252,6 +254,18 @@
 
     <script>
         $(document).ready(function() {
+
+            $('#uom').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                const uomSetting = selectedOption.data('uom-setting');
+                const uom = $(this).val();
+
+                if(uomSetting) {
+                    $('.input-group-item-needed').text(uomSetting);
+                } else {
+                    $('.input-group-item-needed').text('NULL');
+                }
+            });
 
             $('#image-upload').on('change', function(event) {
                 let files = event.target.files;

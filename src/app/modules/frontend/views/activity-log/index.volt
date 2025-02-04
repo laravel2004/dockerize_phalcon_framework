@@ -41,7 +41,7 @@
                     <tbody>
                         {% if page.items|length == 0 %}
                         <tr>
-                            <td colspan="3">No data available</td>
+                            <td colspan="12">No data available</td>
                         </tr>
                         {% else %}
                             {% for activityLog in page.items %}

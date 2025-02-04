@@ -70,11 +70,11 @@
                 <form id="filterForm">
                     <input type="hidden" name="plot_id" id="plotId">
                     <div class="mb-3">
-                        <label for="startDate" class="form-label">Start Date</label>
+                        <label for="startDate" class="form-label">Start Date <small class="text-danger fw-semibold" >*calculated from the start date</small> </label>
                         <input type="date" class="form-control" name="start_date" id="startDate" required>
                     </div>
                     <div class="mb-3">
-                        <label for="endDate" class="form-label">End Date</label>
+                        <label for="endDate" class="form-label">End Date <small class="text-danger fw-semibold" >*calculated from the start date</small> </label>
                         <input type="date" class="form-control" name="end_date" id="endDate" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Lihat Biaya</button>

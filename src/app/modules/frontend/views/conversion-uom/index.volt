@@ -94,11 +94,11 @@
                 <form id="addEditUomForm">
                     <input type="hidden" id="conversionId" name="id">
                     <div class="mb-3">
-                        <label for="conversionName" class="form-label">Name</label>
+                        <label for="conversionName" class="form-label">Name <small class="text-danger fw-semibold" >*start to end conversion</small> </label>
                         <input type="text" class="form-control" id="conversionName" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="conversionUomStart" class="form-label">UoM Start</label>
+                        <label for="conversionUomStart" class="form-label">UoM Start <small class="text-danger fw-semibold" >*make the largest unit</small></label>
                         <select class="form-select" id="conversionUomStart" name="master_uom_start" required>
                             <option value="">Select UoM Start</option>
                             {% for uom in uoms %}
@@ -107,10 +107,9 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="conversionUomEnd" class="form-label
-                        ">UoM End</label>
+                        <label for="conversionUomEnd" class="form-label">UoM End <small class="text-danger fw-semibold" >*make the smallest unit</small></label>
                         <select class="form-select" id="conversionUomEnd" name="master_uom_end" required>
-                            <option value="">Select UoM End</option>
+                            <option value="">Select UoM End  </option>
                             {% for uom in uoms %}
                             <option value="{{ uom.id }}">{{ uom.name }}</option>
                             {% endfor %}
@@ -118,7 +117,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="conversionValue" class="form-label
-                        ">Conversion Value</label>
+                        ">Conversion Value <small class="text-danger fw-semibold" >*50 covert to 1 largest UoM = 50 smallest UoM</small> </label>
                         <input type="number" class="form-control" id="conversionValue" name="conversion" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>

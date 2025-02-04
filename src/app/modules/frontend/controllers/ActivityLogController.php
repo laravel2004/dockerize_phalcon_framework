@@ -42,8 +42,12 @@ class ActivityLogController extends Controller
 
             if (!empty($search)) {
                 $builder->andWhere(
-                    'activity_setting.name LIKE :search: OR al.description LIKE :search:',
-                    ['search' => '%' . $search . '%']
+                    'activity_setting.name LIKE :search1: OR al.description LIKE :search2: OR p.code LIKE :search3:',
+                    [
+                        'search1' => '%' . $search . '%',
+                        'search2' => '%' . $search . '%',
+                        'search3' => '%' . $search . '%'
+                    ]
                 );
             }
 

@@ -49,6 +49,17 @@ services:
     networks:
       - phalcon_network
 
+  redis_phalcon:
+    image: redis:latest
+    container_name: redis_phalcon
+    restart: unless-stopped
+    hostname: "redis"
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - phalcon_network
+
   nginx_phalcon_1:
     build: ./nginx
     image: nginx:latest

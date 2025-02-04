@@ -72,7 +72,7 @@
                     <tbody>
                         <?php if ($this->length($page->items) == 0) { ?>
                         <tr>
-                            <td colspan="3">No data available</td>
+                            <td colspan="12">No data available</td>
                         </tr>
                         <?php } else { ?>
                             <?php $v114146942739798027821iterator = $page->items; $v114146942739798027821incr = 0; $v114146942739798027821loop = new stdClass(); $v114146942739798027821loop->self = &$v114146942739798027821loop; $v114146942739798027821loop->length = count($v114146942739798027821iterator); $v114146942739798027821loop->index = 1; $v114146942739798027821loop->index0 = 1; $v114146942739798027821loop->revindex = $v114146942739798027821loop->length; $v114146942739798027821loop->revindex0 = $v114146942739798027821loop->length - 1; ?><?php foreach ($v114146942739798027821iterator as $activityLog) { ?><?php $v114146942739798027821loop->first = ($v114146942739798027821incr == 0); $v114146942739798027821loop->index = $v114146942739798027821incr + 1; $v114146942739798027821loop->index0 = $v114146942739798027821incr; $v114146942739798027821loop->revindex = $v114146942739798027821loop->length - $v114146942739798027821incr; $v114146942739798027821loop->revindex0 = $v114146942739798027821loop->length - ($v114146942739798027821incr + 1); $v114146942739798027821loop->last = ($v114146942739798027821incr == ($v114146942739798027821loop->length - 1)); ?>

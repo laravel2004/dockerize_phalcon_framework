@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 use Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter;
 use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
+use Phalcon\Storage\SerializerFactory;
+use Phalcon\Cache\Adapter\Redis;
+use Phalcon\Cache\Cache;
 
 
 /**
@@ -80,5 +83,21 @@ $di->setShared('voltShared', function ($view) {
     ]);
 
     return $volt;
+});
+
+$di->setShared('cache', function () {
+    $serializerFactory = new SerializerFactory();
+
+    $options = [
+        'defaultSerializer' => 'Json',
+        'lifetime' => 3600,
+        'host' => 'redis',
+        'port' => 6379,
+        'presistent' => false,
+        'index' => 1,
+    ];
+
+    $adapter = new Redis($serializerFactory, $options);
+    return new Cache($adapter);
 });
 
