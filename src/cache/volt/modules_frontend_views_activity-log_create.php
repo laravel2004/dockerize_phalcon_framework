@@ -144,6 +144,7 @@
                     <div class="input-group">
                         <span class="input-group-text">Rp.</span>
                         <input type="text" name="cost" id="cost" class="form-control" required>
+                        <span class="input-group-text input-group-text-cost">NULL</span>
                     </div>
                     <!-- Note for cost input -->
                     <small id="cost-note" class="form-text text-muted">For Harian, fill in the daily wage per worker. For Jam, fill in the hourly wage per worker.</small>
@@ -227,6 +228,8 @@
         $('#activity-setting').on('change', function() {
             const selectedOption = $(this).find(':selected');
             const type = selectedOption.data('type');
+
+            $('.input-group-text-cost').text(`/ ${type} / Worker`);
 
             if (type === 'Jam') {
                 $('#time-of-work-label').text('Time of Work (hours)');
