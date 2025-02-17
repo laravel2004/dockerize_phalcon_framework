@@ -31,6 +31,12 @@ class ActivitySetting extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $type_activity_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -55,6 +61,7 @@ class ActivitySetting extends \Phalcon\Mvc\Model
         $this->setSchema("erp_rmi");
         $this->setSource("activity_setting");
         $this->hasMany('id', 'Erp_rmi\Modules\Frontend\Models\ActivityLog', 'activity_setting_id', ['alias' => 'activityLog']);
+        $this->belongsTo('type_activity_id', 'Erp_rmi\Modules\Frontend\Models\TypeActivity', 'id', ['alias' => 'typeActivity']);
     }
 
     /**

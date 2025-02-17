@@ -22,6 +22,7 @@
                             <th>No</th>
                             <th>Code</th>
                             <th>Project</th>
+                            <th>Wide </th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -36,12 +37,13 @@
                                 <td>{{ loop.index + ((page.current - 1) * page.limit) }}</td>
                                 <td>{{ plot.code }}</td>
                                 <td>{{ plot.project.project }} - {{ plot.project.code }}</td>
+                                <td>{{ plot.wide }} Hectare</td>
                                 <td>
                                     <button class="btn btn-warning btn-sm edit-btn"
                                             data-id="{{ plot.id }}"
                                             data-code="{{ plot.code }}"
-                                            data-projectCode="{{ plot.project.code }}"
-                                            data-projectId="{{ plot.project.id }}">Edit
+                                            data-wide="{{ plot.wide }}"
+                                            data-project="{{ plot.project.id }}">Edit
                                     </button>
                                     <button class="btn btn-danger btn-sm delete-btn" data-id="{{ plot.id }}">Delete</button>
                                 </td>
@@ -95,7 +97,6 @@
                             <option value="">Select Project</option>
                             {% for project in projects %}
                                 <option value="{{ project.id }}"
-                                    {% if project.id == plot.project.id %} selected {% endif %}
                                 >
                                     {{ project.project }}
                                 </option>
@@ -106,7 +107,13 @@
                     <!-- Code Field -->
                     <div class="mb-3">
                         <label for="plotCode" class="form-label">Code</label>
-                        <input type="text" class="form-control" id="plotCode" required>
+                        <input placeholder="Enter the code" type="text" name="code" class="form-control" id="plotCode" required>
+                    </div>
+
+                    <!-- Wide Field -->
+                    <div class="mb-3">
+                        <label for="plotWide" class="form-label">Wide</label>
+                        <input placeholder="10" type="number" step="0.01" min="0" name="wide" class="form-control" id="plotWide" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -128,14 +135,11 @@
 
         // Open modal for editing an existing Plot
         $('.edit-btn').on('click', function() {
-            const id = $(this).data('id');
-            const code = $(this).data('code');
-            const projectCode = $(this).data('projectCode');
-            const projectId = $(this).data('projectId');
 
-            $('#plotId').val(id);
-            $('#plotCode').val(code);
-            $('#projectId').val(projectId);
+            $('#plotId').val($(this).data('id'));
+            $('#projectId').val($(this).data('project'));
+            $('#plotCode').val($(this).data('code'));
+            $('#plotWide').val($(this).data('wide'));
 
             $('#addUomModalLabel').text('Edit Plot');
             $('#addUomModal').modal('show');
@@ -145,50 +149,36 @@
         $('#addEditUomForm').on('submit', function(event) {
             event.preventDefault();
 
-            const plotId = $('#plotId').val();
-            const plotCode = $('#plotCode').val();
-            const projectId = $('#projectId').val();
-            const url = plotId ? '/frontend/plot/save' : '/frontend/plot/save';  // Both add and edit go to the same URL
+            const formData = new FormData(this);
 
-            if (plotCode && projectId) {
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: {
-                        id: plotId,
-                        code: plotCode,
-                        project_id: projectId
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        }).then(function() {
-                            $('#addUomModal').modal('hide');
-                            $('#addEditUomForm')[0].reset();
-                            location.reload();
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: xhr.responseJSON.message,
-                            confirmButtonText: 'OK'
-                        });
-                    },
-                    dataType: 'json'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Fields are required!',
-                    confirmButtonText: 'OK'
-                });
-            }
+            $.ajax({
+                url: '/frontend/plot/save',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        $('#addUomModal').modal('hide');
+                        $('#addEditUomForm')[0].reset();
+                        location.reload();
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: xhr.responseJSON.message,
+                        confirmButtonText: 'OK'
+                    });
+                },
+                dataType: 'json'
+            });
         });
 
         // Handle delete button

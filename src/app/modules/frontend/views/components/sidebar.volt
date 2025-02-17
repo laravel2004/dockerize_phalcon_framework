@@ -130,6 +130,30 @@
                         <span>Material</span>
                     </a>
                 </li>
+                <li
+                    {% if routeName == "type-activity"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/type-activity') }}" class="sidebar-link">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Type Activity</span>
+                    </a>
+                </li>
+                <li
+                    {% if routeName == "worker-data"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/worker-data') }}" class="sidebar-link">
+                        <i class="bi bi-person"></i>
+                        <span>Worker Data</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

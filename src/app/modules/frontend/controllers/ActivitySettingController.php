@@ -3,6 +3,7 @@
 namespace Erp_rmi\Modules\Frontend\Controllers;
 
 use Erp_rmi\Modules\Frontend\Models\ActivitySetting;
+use Erp_rmi\Modules\Frontend\Models\TypeActivity;
 use Phalcon\Mvc\Controller;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 
@@ -34,6 +35,7 @@ class ActivitySettingController extends Controller
         );
 
         $page = $paginator->paginate();
+        $typeActivity = TypeActivity::find(["conditions" => "deleted_at IS NULL"]);
 
         $page->before = ($page->current > 1) ? $page->current - 1 : null;
         $page->next = ($page->current < ceil($page->total_items / $page->limit)) ? $page->current + 1 : null;
@@ -44,6 +46,7 @@ class ActivitySettingController extends Controller
         $this->view->routeName = "activity-setting";
         $this->view->setVar('page', $page);
         $this->view->setVar('search', $search);
+        $this->view->setVar('typeActivities', $typeActivity);
     }
 
 
@@ -63,9 +66,9 @@ class ActivitySettingController extends Controller
     {
         if ($this->request->isPost()) {
             $name = $this->request->getPost('name', 'string');
-            $type = $this->request->getPost('type', 'string');
             $description = $this->request->getPost('description', 'string');
             $id = $this->request->getPost('id', 'int');
+            $type_activity_id = $this->request->getPost('type_activity_id', 'int');
 
             try {
                 if ($id) {
@@ -87,13 +90,6 @@ class ActivitySettingController extends Controller
                     ]);
                 }
 
-                if (empty($type)) {
-                    return $this->response->setJsonContent([
-                        'status' => 'error',
-                        'message' => 'Type is required'
-                    ]);
-                }
-
                 if (empty($description)) {
                     return $this->response->setJsonContent([
                         'status' => 'error',
@@ -101,8 +97,24 @@ class ActivitySettingController extends Controller
                     ]);
                 }
 
+                if (empty($type_activity_id)) {
+                    return $this->response->setJsonContent([
+                        'status' => 'error',
+                        'message' => 'Type Activity is required'
+                    ]);
+                }
+
+                $typeActivity = TypeActivity::find([
+                    'conditions' => 'id = :id:',
+                    'bind' => [
+                        'id' => $type_activity_id
+                    ]
+                ])->getFirst();
+
+
+                $activitySetting->type_activity_id = $type_activity_id;
                 $activitySetting->name = $name;
-                $activitySetting->type = $type;
+                $activitySetting->type = $typeActivity->name_type;
                 $activitySetting->description = $description;
 
                 if (!$activitySetting->save()) {

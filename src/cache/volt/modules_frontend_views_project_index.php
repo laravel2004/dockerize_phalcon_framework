@@ -53,6 +53,7 @@
                             <th>No</th>
                             <th>Name</th>
                             <th>Code</th>
+                            <th>Wide</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -67,6 +68,7 @@
                                 <td><?= $v101669741761047984571loop->index + (($page->current - 1) * $page->limit) ?></td>
                                 <td><?= $project->project ?></td>
                                 <td><?= $project->code ?></td>
+                                <td><?= $project->wide ?> Hectare</td>
                                 <td>
                                     <button class="btn btn-warning btn-sm edit-btn" data-id="<?= $project->id ?>" data-project="<?= $project->project ?>" data-code="<?= $project->code ?>" >Edit</button>
                                     <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $project->id ?>">Delete</button>

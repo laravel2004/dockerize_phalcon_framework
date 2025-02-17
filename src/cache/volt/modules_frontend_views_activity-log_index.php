@@ -162,18 +162,18 @@
                 }
             });
 
-        function formatRupiah(number, type) {
-                const formattedNumber = new Intl.NumberFormat('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                }).format(number);
+            function formatRupiah(number, type) {
+                    const formattedNumber = new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                    }).format(number);
 
-                if (type == null) {
-                    return `${formattedNumber}`;
-                }
-                return `${formattedNumber} / ${type}`;
+                    if (type == null) {
+                        return `${formattedNumber}`;
+                    }
+                    return `${formattedNumber} / ${type}`;
             }
 
             // Apply the format to cost and total cost columns

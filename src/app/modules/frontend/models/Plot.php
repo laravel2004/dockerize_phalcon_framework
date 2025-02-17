@@ -25,6 +25,12 @@ class Plot extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var double
+     */
+    public $wide;
+
+    /**
+     *
      * @var string
      */
     public $created_at;

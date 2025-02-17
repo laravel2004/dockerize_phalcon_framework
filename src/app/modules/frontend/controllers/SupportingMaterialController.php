@@ -2,6 +2,7 @@
 
 namespace Erp_rmi\Modules\Frontend\Controllers;
 
+use Erp_rmi\Modules\Frontend\Models\ActivityLog;
 use Erp_rmi\Modules\Frontend\Models\ConversionUom;
 use Erp_rmi\Modules\Frontend\Models\Material;
 use Erp_rmi\Modules\Frontend\Models\Plot;
@@ -28,11 +29,14 @@ class SupportingMaterialController extends Controller
                     'sm.uom',
                     'sm.image',
                     'm.name',
-                    'p.code'
+                    'p.code',
+                    'activitySetting.name AS activity_name',  // Ubah cara mengakses menjadi activitySetting.name
                 ])
                 ->from(['sm' => 'Erp_rmi\Modules\Frontend\Models\SupportingMaterial'])
                 ->join('Erp_rmi\Modules\Frontend\Models\Material', 'sm.material_id = m.id', 'm')
                 ->join('Erp_rmi\Modules\Frontend\Models\Plot', 'sm.plot_id = p.id', 'p')
+                ->join('Erp_rmi\Modules\Frontend\Models\ActivityLog', 'sm.activity_log_id = al.id', 'al')
+                ->join('Erp_rmi\Modules\Frontend\Models\ActivitySetting', 'al.activity_setting_id = activitySetting.id', 'activitySetting')
                 ->where('sm.deleted_at IS NULL');
 
             if (!empty($search)) {
@@ -59,6 +63,7 @@ class SupportingMaterialController extends Controller
             $materials = Material::find(["conditions" => "deleted_at IS NULL"]);
             $plots = Plot::find(["conditions" => "deleted_at IS NULL"]);
             $uoms = ConversionUom::find(["conditions" => "deleted_at IS NULL"]);
+            $activityLogs = ActivityLog::find(["conditions" => "deleted_at IS NULL"]);
 
             $this->view->title = 'Manage Supporting Material';
             $this->view->subtitle = 'List of Supporting Material';
@@ -68,11 +73,52 @@ class SupportingMaterialController extends Controller
             $this->view->setVar('materials', $materials);
             $this->view->setVar('plots', $plots);
             $this->view->setVar('uoms', $uoms);
+            $this->view->setVar('activityLogs', $activityLogs);
         } catch (\Exception $e) {
             $this->response->setStatusCode(500, 'Internal Server Error');
             $this->response->setJsonContent(['message' => 'An error occurred while retrieving the data', 'error' => $e->getMessage()]);
             return $this->response->send();
         }
+    }
+
+    public function activityLogsAction()
+    {
+        $plotId = $this->request->getQuery('plot_id', 'int');
+
+        if (!$plotId) {
+            return $this->response->setJsonContent([
+                'status' => 'error',
+                'message' => 'Plot ID is required'
+            ]);
+        }
+
+        $activityLogs = $this->modelsManager->createBuilder()
+            ->columns([
+                'ActivityLog.id AS log_id',
+                'ActivityLog.start_date',
+                'ActivityLog.end_date',
+                'ActivityLog.description AS log_description',
+                'ActivitySetting.name AS activity_name',
+                'ActivitySetting.description AS activity_description',
+            ])
+            ->from(['ActivityLog' => '\Erp_rmi\Modules\Frontend\Models\ActivityLog'])
+            ->join('\Erp_rmi\Modules\Frontend\Models\ActivitySetting', 'ActivitySetting.id = ActivityLog.activity_setting_id', 'ActivitySetting') // Join ke tabel ActivitySetting
+            ->where('ActivityLog.plot_id = :plot_id:', ['plot_id' => $plotId])
+            ->getQuery()
+            ->execute();
+
+        if (count($activityLogs) == 0) {
+            return $this->response->setJsonContent([
+                'status' => 'error',
+                'message' => 'No activity logs found for this plot'
+            ]);
+        }
+
+        $this->response->setJsonContent([
+            'activityLogs' => $activityLogs->toArray()
+        ]);
+
+        return $this->response;
     }
 
     public function saveAction()
@@ -84,6 +130,7 @@ class SupportingMaterialController extends Controller
             $item_needed = $this->request->getPost('item_needed', 'string');
             $uom = $this->request->getPost('uom', 'int');
             $date = $this->request->getPost('date', 'string');
+            $activity_log_id = $this->request->getPost('activity_log_id', 'int');
             $conversionUom = ConversionUom::findFirstById($uom);
 
             $material = Material::findFirstById($material_id);
@@ -127,6 +174,7 @@ class SupportingMaterialController extends Controller
                 $supportingMaterial->uom = $conversionUom->uom_end->name;
                 $supportingMaterial->image = json_encode($imagePaths) ?? [];
                 $supportingMaterial->date = $date;
+                $supportingMaterial->activity_log_id = $activity_log_id;
 
                 if (!$supportingMaterial->save()) {
 

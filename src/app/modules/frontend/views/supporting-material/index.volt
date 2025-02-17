@@ -97,6 +97,7 @@
                                 <th>No</th>
                                 <th>Plot Code</th>
                                 <th>Name Material</th>
+                                <th>Activity Logs</th>
                                 <th>Item Needed</th>
                                 <th>Conversion UoM</th>
                                 <th>Date</th>
@@ -115,6 +116,7 @@
                                     <td>{{ loop.index + ((page.current - 1) * page.limit) }}</td>
                                     <td>{{ supporting.code }}</td>
                                     <td>{{ supporting.name }}</td>
+                                    <td>{{ supporting.activity_name }}</td>
                                     <td>{{ supporting.item_needed }} {{ supporting.uom }}</td>
                                     <td>{{ supporting.conversion_of_uom_item }}</td>
                                     <td>{{ supporting.date }}</td>
@@ -195,6 +197,17 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="activityLogs" class="form-label">Activity Log</label>
+                            <select name="activity_log_id" class="form-control" id="activityLogs" required>
+                                <option value="">Select Activity Log</option>
+                                {% for activityLog in activityLogs %}
+                                    <option value="{{ activityLog.id }}">
+                                        {{ activityLog.activitySetting.name }} - [ {{ activityLog.description }} ]
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
                         <div class="mb-3">
                             <label for="materialId" class="form-label">Name Material</label>
@@ -254,6 +267,29 @@
 
     <script>
         $(document).ready(function() {
+
+            $('#plotId').on('change', function() {
+                const plotId = $(this).val();
+
+                if (plotId) {
+                    $.ajax({
+                        url: `/frontend/supporting-material/activity-logs?plot_id=${plotId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            $('#activityLogs').empty();
+                            $('#activityLogs').append('<option value="">Select Activity Log</option>');
+                            $.each(response.activityLogs, function(index, activityLog) {
+                            console.log(activityLog)
+                                $('#activityLogs').append(`<option value="${activityLog.log_id}">${activityLog.activity_name} - [${activityLog.start_date} - ${activityLog.end_date}]</option>`);
+                            });
+                        },
+                        error: function(xhr) {
+                            console.error('Failed to fetch activity logs', xhr);
+                        }
+                    });
+                }
+            });
+
 
             $('#uom').on('change', function() {
                 const selectedOption = $(this).find('option:selected');

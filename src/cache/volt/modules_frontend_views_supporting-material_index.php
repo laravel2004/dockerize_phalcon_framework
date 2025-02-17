@@ -128,6 +128,7 @@
                                 <th>No</th>
                                 <th>Plot Code</th>
                                 <th>Name Material</th>
+                                <th>Activity Logs</th>
                                 <th>Item Needed</th>
                                 <th>Conversion UoM</th>
                                 <th>Date</th>
@@ -146,6 +147,7 @@
                                     <td><?= $v137912291028539360251loop->index + (($page->current - 1) * $page->limit) ?></td>
                                     <td><?= $supporting->code ?></td>
                                     <td><?= $supporting->name ?></td>
+                                    <td><?= $supporting->activity_name ?></td>
                                     <td><?= $supporting->item_needed ?> <?= $supporting->uom ?></td>
                                     <td><?= $supporting->conversion_of_uom_item ?></td>
                                     <td><?= $supporting->date ?></td>
@@ -226,6 +228,17 @@
                                 <?php $v137912291028539360251incr++; } ?>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="activityLogs" class="form-label">Activity Log</label>
+                            <select name="activity_log_id" class="form-control" id="activityLogs" required>
+                                <option value="">Select Activity Log</option>
+                                <?php $v137912291028539360251iterator = $activityLogs; $v137912291028539360251incr = 0; $v137912291028539360251loop = new stdClass(); $v137912291028539360251loop->self = &$v137912291028539360251loop; $v137912291028539360251loop->length = count($v137912291028539360251iterator); $v137912291028539360251loop->index = 1; $v137912291028539360251loop->index0 = 1; $v137912291028539360251loop->revindex = $v137912291028539360251loop->length; $v137912291028539360251loop->revindex0 = $v137912291028539360251loop->length - 1; ?><?php foreach ($v137912291028539360251iterator as $activityLog) { ?><?php $v137912291028539360251loop->first = ($v137912291028539360251incr == 0); $v137912291028539360251loop->index = $v137912291028539360251incr + 1; $v137912291028539360251loop->index0 = $v137912291028539360251incr; $v137912291028539360251loop->revindex = $v137912291028539360251loop->length - $v137912291028539360251incr; $v137912291028539360251loop->revindex0 = $v137912291028539360251loop->length - ($v137912291028539360251incr + 1); $v137912291028539360251loop->last = ($v137912291028539360251incr == ($v137912291028539360251loop->length - 1)); ?>
+                                    <option value="<?= $activityLog->id ?>">
+                                        <?= $activityLog->activitySetting->name ?> - [ <?= $activityLog->description ?> ]
+                                    </option>
+                                <?php $v137912291028539360251incr++; } ?>
+                            </select>
+                        </div>
 
                         <div class="mb-3">
                             <label for="materialId" class="form-label">Name Material</label>
@@ -285,6 +298,29 @@
 
     <script>
         $(document).ready(function() {
+
+            $('#plotId').on('change', function() {
+                const plotId = $(this).val();
+
+                if (plotId) {
+                    $.ajax({
+                        url: `/frontend/supporting-material/activity-logs?plot_id=${plotId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            $('#activityLogs').empty();
+                            $('#activityLogs').append('<option value="">Select Activity Log</option>');
+                            $.each(response.activityLogs, function(index, activityLog) {
+                            console.log(activityLog)
+                                $('#activityLogs').append(`<option value="${activityLog.log_id}">${activityLog.activity_name} - [${activityLog.start_date} - ${activityLog.end_date}]</option>`);
+                            });
+                        },
+                        error: function(xhr) {
+                            console.error('Failed to fetch activity logs', xhr);
+                        }
+                    });
+                }
+            });
+
 
             $('#uom').on('change', function() {
                 const selectedOption = $(this).find('option:selected');

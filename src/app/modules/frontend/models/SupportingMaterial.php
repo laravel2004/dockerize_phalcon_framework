@@ -49,6 +49,12 @@ class SupportingMaterial extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $activity_log_id;
+
+    /**
+     *
      * @var string
      */
     public $created_at;
@@ -92,6 +98,14 @@ class SupportingMaterial extends \Phalcon\Mvc\Model
             "id",
             [
                 'alias' => 'plot'
+            ]
+        );
+        $this->belongsTo(
+            "activity_log_id",
+            "Erp_rmi\Modules\Frontend\Models\ActivityLog",
+            "id",
+            [
+                'alias' => 'activityLog'
             ]
         );
     }

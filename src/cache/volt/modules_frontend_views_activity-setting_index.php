@@ -54,6 +54,7 @@
                             <th>Name</th>
                             <th>Description</th>
                             <th>Type</th>
+                            <th>Cost</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -69,11 +70,12 @@
                                 <td><?= $activitySetting->name ?></td>
                                 <td><?= $activitySetting->description ?></td>
                                 <td><?= $activitySetting->type ?></td>
+                                <td class="format-rupiah"><?= $activitySetting->typeActivity->cost ?> / <?= $activitySetting->type ?></td>
                                 <td>
                                     <button class="btn btn-warning btn-sm edit-btn"
                                             data-id="<?= $activitySetting->id ?>"
                                             data-name="<?= $activitySetting->name ?>"
-                                            data-type="<?= $activitySetting->type ?>"
+                                            data-type="<?= $activitySetting->type_activity_id ?>"
                                             data-description="<?= $activitySetting->description ?>">Edit
                                     </button>
                                     <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $activitySetting->id ?>">Delete</button>
@@ -119,30 +121,29 @@
             </div>
             <div class="modal-body">
                 <form id="addEditUomForm">
-                    <input type="hidden" id="uomId">
+                    <input type="hidden" name="id" id="uomId">
 
                     <!-- Name Field -->
                     <div class="mb-3">
                         <label for="uomName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="uomName" required>
+                        <input name="name" type="text" class="form-control" id="uomName" required>
                     </div>
 
                     <!-- Type Field -->
                     <div class="mb-3">
                         <label for="uomType" class="form-label">Type</label>
-                        <select class="form-select" id="uomType" required>
+                        <select name="type_activity_id" class="form-select" id="uomType" required>
                             <option value="">Select Type</option>
-                            <option value="Borongan">Borongan</option>
-                            <option value="Harian">Harian</option>
-                            <option value="Jam">Jam</option>
-                            <option value="Vendor">Vendor</option>
+                            <?php $v138591492476648313221iterator = $typeActivities; $v138591492476648313221incr = 0; $v138591492476648313221loop = new stdClass(); $v138591492476648313221loop->self = &$v138591492476648313221loop; $v138591492476648313221loop->length = count($v138591492476648313221iterator); $v138591492476648313221loop->index = 1; $v138591492476648313221loop->index0 = 1; $v138591492476648313221loop->revindex = $v138591492476648313221loop->length; $v138591492476648313221loop->revindex0 = $v138591492476648313221loop->length - 1; ?><?php foreach ($v138591492476648313221iterator as $typeActivity) { ?><?php $v138591492476648313221loop->first = ($v138591492476648313221incr == 0); $v138591492476648313221loop->index = $v138591492476648313221incr + 1; $v138591492476648313221loop->index0 = $v138591492476648313221incr; $v138591492476648313221loop->revindex = $v138591492476648313221loop->length - $v138591492476648313221incr; $v138591492476648313221loop->revindex0 = $v138591492476648313221loop->length - ($v138591492476648313221incr + 1); $v138591492476648313221loop->last = ($v138591492476648313221incr == ($v138591492476648313221loop->length - 1)); ?>
+                                <option value="<?= $typeActivity->id ?>"><?= $typeActivity->name_type ?> [<?= $typeActivity->cost ?> / <?= $typeActivity->name_type ?>]</option>
+                            <?php $v138591492476648313221incr++; } ?>
                         </select>
                     </div>
 
                     <!-- Description Field -->
                     <div class="mb-3">
                         <label for="uomDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="uomDescription" rows="3" required></textarea>
+                        <textarea name="description" class="form-control" id="uomDescription" rows="3" required></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -156,6 +157,22 @@
 <script>
     $(document).ready(function() {
 
+        function formatRupiah(number, type){
+            const formatter = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+
+            return type ? `${formatter} / ${type}` : formatter;
+        }
+
+        $('.format-rupiah').each(function() {
+            const value = $(this).text();
+            const [number, type] = value.split('/');
+            $(this).text(formatRupiah(number.trim(), type.trim()));
+        });
+
         $('#btnAddModal').on('click', function() {
             $('#addEditUomForm')[0].reset();
             $('#addUomModalLabel').text('Add Activity Setting');
@@ -163,55 +180,36 @@
 
         // Handle form submission for adding/editing
         $('#addEditUomForm').on('submit', function(event) {
-        console.log("test")
             event.preventDefault();
 
-            const uomId = $('#uomId').val();
-            const uomName = $('#uomName').val();
-            const uomType = $('#uomType').val();
-            const uomDescription = $('#uomDescription').val();
-            const url = uomId ? '/frontend/activity-setting/save' : '/frontend/activity-setting/save';
+            const formData = new FormData(this);
 
-            if (uomName) {
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: {
-                        id: uomId,
-                        name : uomName,
-                        type: uomType,
-                        description : uomDescription
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: response.message,
-                            confirmButtonText: 'OK'
-                        }).then(function() {
-                            $('#addUomModal').modal('hide');
-                            $('#addEditUomForm')[0].reset();
-                            location.reload();
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: xhr.responseJSON.message,
-                            confirmButtonText: 'OK'
-                        });
-                    },
-                    dataType: 'json'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Name field is required!',
-                    confirmButtonText: 'OK'
-                });
-            }
+            $.ajax({
+                url: '/frontend/activity-setting/save',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        location.reload();
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: xhr.responseJSON.message,
+                        confirmButtonText: 'OK'
+                    });
+                },
+                dataType: 'json'
+            });
         });
 
         // Open modal for editing

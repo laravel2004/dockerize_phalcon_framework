@@ -69,6 +69,7 @@ class PlotController extends Controller
             $code = $this->request->getPost('code', 'string');
             $projectId = $this->request->getPost('project_id', 'string');
             $id = $this->request->getPost('id', 'int');
+            $wide = $this->request->getPost('wide', 'double');
 
             try {
                 if ($id) {
@@ -97,7 +98,12 @@ class PlotController extends Controller
                     ]);
                 }
 
-                $project = Project::findFirstById($projectId);
+                $project = Project::find([
+                    'conditions' => 'id = :id:',
+                    'bind' => [
+                        'id' => $projectId
+                    ]
+                ])->getFirst();
                 if (!$project) {
                     return $this->response->setJsonContent([
                         'status' => 'error',
@@ -105,8 +111,23 @@ class PlotController extends Controller
                     ]);
                 }
 
+                $project->wide += $wide - $plot->wide;
                 $plot->code = $code;
                 $plot->project_id = $projectId;
+                $plot->wide = $wide;
+
+                if (!$project->save()) {
+                    $errors = [];
+                    foreach ($plot->getMessages() as $message) {
+                        $errors[] = $message->getMessage();
+                    }
+
+                    return $this->response->setJsonContent([
+                        'status' => 'error',
+                        'message' => $errors
+                    ]);
+                }
+
 
                 if (!$plot->save()) {
                     $errors = [];
@@ -159,6 +180,15 @@ class PlotController extends Controller
         $plot->deleted_at = date('Y-m-d H:i:s');
 
         if ($plot->save()) {
+            $project = Project::findFirstById($plot->project_id);
+            $project->wide = $project->wide - $plot->wide;
+
+            if (!$project->save()) {
+                return $this->response->setJsonContent([
+                    'status' => 'error',
+                    'message' => 'Gagal menghapus Plot'
+                ]);
+            }
             return $this->response->setJsonContent([
                 'status' => 'success',
                 'message' => 'Plot berhasil dihapus'

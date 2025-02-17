@@ -13,6 +13,18 @@ class Material extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    public $conversion_uom_id;
+
+    /**
+     *
+     * @var double
+     */
+    public $price;
+
+    /**
+     *
      * @var string
      */
     public $name;
@@ -54,6 +66,7 @@ class Material extends \Phalcon\Mvc\Model
     {
         $this->setSchema("erp_rmi");
         $this->setSource("material");
+        $this->belongsTo('conversion_uom_id', '\Erp_rmi\Modules\Frontend\Models\ConversionUom', 'id', ['alias' => 'conversion_uom']);
     }
 
     /**

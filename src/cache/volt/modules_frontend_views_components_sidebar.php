@@ -130,6 +130,30 @@
                         <span>Material</span>
                     </a>
                 </li>
+                <li
+                    <?php if ($routeName == 'type-activity') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/type-activity') ?>" class="sidebar-link">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Type Activity</span>
+                    </a>
+                </li>
+                <li
+                    <?php if ($routeName == 'worker-data') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/worker-data') ?>" class="sidebar-link">
+                        <i class="bi bi-person"></i>
+                        <span>Worker Data</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

@@ -2,6 +2,7 @@
 
 namespace Erp_rmi\Modules\Frontend\Controllers;
 
+use Erp_rmi\Modules\Frontend\Models\ConversionUom;
 use Erp_rmi\Modules\Frontend\Models\Material;
 use Erp_rmi\Modules\Frontend\Models\UomSetting;
 use Phalcon\Mvc\Controller;
@@ -35,6 +36,7 @@ class MaterialController extends Controller
         );
 
         $uoms = UomSetting::find(["conditions" => "delete_at IS NULL"]);
+        $conversionUoms = ConversionUom::find(["conditions" => "deleted_at IS NULL"]);
 
         $page = $paginator->paginate();
 
@@ -48,6 +50,7 @@ class MaterialController extends Controller
         $this->view->setVar('page', $page);
         $this->view->setVar('search', $search);
         $this->view->setVar('uoms', $uoms);
+        $this->view->setVar('conversionUoms', $conversionUoms);
     }
 
 
@@ -68,7 +71,9 @@ class MaterialController extends Controller
         if ($this->request->isPost()) {
             $name = $this->request->getPost('name', 'string');
             $stock = $this->request->getPost('stock', 'string');
-            $uom = $this->request->getPost('uom', 'string');
+//            $uom = $this->request->getPost('uom', 'string');
+            $conversion_uom_id = $this->request->getPost('conversion_uom_id', 'int');
+            $price = $this->request->getPost('price', 'double');
             $id = $this->request->getPost('id', 'int');
 
             try {
@@ -98,16 +103,28 @@ class MaterialController extends Controller
                     ]);
                 }
 
-                if (empty($uom)) {
+                if (empty($conversion_uom_id)) {
                     return $this->response->setJsonContent([
                         'status' => 'error',
                         'message' => 'UOM is required'
                     ]);
                 }
 
+                if (empty($price)) {
+                    return $this->response->setJsonContent([
+                        'status' => 'error',
+                        'message' => 'Price is required'
+                    ]);
+                }
+
+                $uomSetting = ConversionUom::findFirstById($conversion_uom_id);
+
+
                 $material->name = $name;
                 $material->stock = $stock;
-                $material->uom = $uom;
+                $material->uom = $uomSetting->name;
+                $material->conversion_uom_id = $conversion_uom_id;
+                $material->price = $price;
 
                 if (!$material->save()) {
                     $errors = [];
