@@ -98,7 +98,25 @@ class ActivityLog extends \Phalcon\Mvc\Model
         $this->setSource("activity_log");
         $this->belongsTo('activity_setting_id', 'Erp_rmi\Modules\Frontend\Models\ActivitySetting', 'id', ['alias' => 'activitySetting']);
         $this->belongsTo('plot_id', 'Erp_rmi\Modules\Frontend\Models\\Plot', 'id', ['alias' => 'plot']);
+        $this->hasMany(
+          'id',
+            'Erp_rmi\Modules\Frontend\Models\SupportingMaterial',
+            'activity_log_id',
+            [
+                'alias' => 'supportingMaterials',
+                'reusable' => true
+            ]
+        );
     }
+
+    public function getProject()
+    {
+        if ($this->plot) {
+            return $this->plot->getRelated('project');
+        }
+        return null;
+    }
+
 
     /**
      * Allows to query a set of records that match the specified conditions

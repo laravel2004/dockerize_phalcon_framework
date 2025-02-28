@@ -23,39 +23,27 @@
                     </a>
                 </li>
                 <li
-                    <?php if ($routeName == 'supporting-material') { ?>
+                    <?php if ($routeName == 'report') { ?>
                          class="sidebar-item active"
                     <?php } else { ?>
                         class="sidebar-item"
                     <?php } ?>
                 >
-                    <a href="<?= $this->url->get('/frontend/supporting-material') ?>" class="sidebar-link">
-                        <i class="bi bi-box"></i>
-                        <span>Supporting Material</span>
+                    <a href="<?= $this->url->get('/frontend/report') ?>" class="sidebar-link">
+                        <i class="bi bi-flag-fill"></i>
+                        <span>Report</span>
                     </a>
                 </li>
                 <li
-                    <?php if ($routeName == 'activity-log') { ?>
+                    <?php if ($routeName == 'report-history') { ?>
                          class="sidebar-item active"
                     <?php } else { ?>
                         class="sidebar-item"
                     <?php } ?>
                 >
-                    <a href="<?= $this->url->get('/frontend/activity-log') ?>" class="sidebar-link">
-                        <i class="bi bi-journal-text"></i>
-                        <span>Activity Log</span>
-                    </a>
-                </li>
-                <li
-                    <?php if ($routeName == 'export') { ?>
-                         class="sidebar-item active"
-                    <?php } else { ?>
-                        class="sidebar-item"
-                    <?php } ?>
-                >
-                    <a href="<?= $this->url->get('/frontend/export') ?>" class="sidebar-link">
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                        <span>Export View</span>
+                    <a href="<?= $this->url->get('/frontend/report/history') ?>" class="sidebar-link">
+                        <i class="bi bi-clock-history"></i>
+                        <span>History</span>
                     </a>
                 </li>
                 <li 
@@ -131,6 +119,18 @@
                     </a>
                 </li>
                 <li
+                    <?php if ($routeName == 'budget-activity') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/budget-activity') ?>" class="sidebar-link">
+                        <i class="bi bi-cash-coin"></i>
+                        <span>Budget Activity</span>
+                    </a>
+                </li>
+                <li
                     <?php if ($routeName == 'type-activity') { ?>
                          class="sidebar-item active"
                     <?php } else { ?>
@@ -152,6 +152,30 @@
                     <a href="<?= $this->url->get('/frontend/worker-data') ?>" class="sidebar-link">
                         <i class="bi bi-person"></i>
                         <span>Worker Data</span>
+                    </a>
+                </li>
+                <li
+                    <?php if ($routeName == 'supporting-material') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/supporting-material') ?>" class="sidebar-link">
+                        <i class="bi bi-box"></i>
+                        <span>Supporting Material</span>
+                    </a>
+                </li>
+                <li
+                    <?php if ($routeName == 'activity-log') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/activity-log') ?>" class="sidebar-link">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Activity Log</span>
                     </a>
                 </li>
             </ul>

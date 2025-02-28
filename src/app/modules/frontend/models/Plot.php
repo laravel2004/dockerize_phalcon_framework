@@ -62,6 +62,15 @@ class Plot extends \Phalcon\Mvc\Model
                 'alias' => 'project'
             ]
         );
+
+        $this->hasMany(
+            "id",
+            "Erp_rmi\Modules\Frontend\Models\ActivityLog",
+            "plot_id",
+            [
+                'alias' => 'activityLogs'
+            ]
+        );
     }
 
     /**
