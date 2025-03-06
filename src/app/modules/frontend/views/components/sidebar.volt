@@ -9,7 +9,7 @@
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
-                <li class="sidebar-title">Menu</li>
+                <li class="sidebar-title">Core</li>
                 <li
                     {% if routeName == "dashboard"  %}
                          class="sidebar-item active"
@@ -46,6 +46,19 @@
                         <span>History</span>
                     </a>
                 </li>
+                <li class="sidebar-title">Setting</li>
+                <li
+                    {% if routeName == "budget-activity"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/budget-activity') }}" class="sidebar-link">
+                        <i class="bi bi-cash-coin"></i>
+                        <span>Budget Activity</span>
+                    </a>
+                </li>
                 <li 
                     {% if routeName == "uom-setting"  %}
                          class="sidebar-item active"
@@ -68,66 +81,6 @@
                     <a href="{{ url.get('/frontend/conversion-uom') }}" class="sidebar-link">
                         <i class="bi bi-calculator"></i>
                         <span>Conversion UoM</span>
-                    </a>
-                </li>
-                <li
-                    {% if routeName == "project"  %}
-                         class="sidebar-item active"
-                    {% else %}
-                        class="sidebar-item"
-                    {% endif %}
-                >
-                    <a href="{{ url.get('/frontend/project') }}" class="sidebar-link">
-                        <i class="bi bi-kanban"></i>
-                        <span>Project</span>
-                    </a>
-                </li>
-                <li
-                    {% if routeName == "plot"  %}
-                         class="sidebar-item active"
-                    {% else %}
-                        class="sidebar-item"
-                    {% endif %}
-                >
-                    <a href="{{ url.get('/frontend/plot') }}" class="sidebar-link">
-                        <i class="bi bi-clipboard-data"></i>
-                        <span>Plot</span>
-                    </a>
-                </li>
-                <li
-                    {% if routeName == "activity-setting"  %}
-                         class="sidebar-item active"
-                    {% else %}
-                        class="sidebar-item"
-                    {% endif %}
-                >
-                    <a href="{{ url.get('/frontend/activity-setting') }}" class="sidebar-link">
-                        <i class="bi bi-sliders2-vertical"></i>
-                        <span>Activity Setting</span>
-                    </a>
-                </li>
-                <li
-                    {% if routeName == "material"  %}
-                         class="sidebar-item active"
-                    {% else %}
-                        class="sidebar-item"
-                    {% endif %}
-                >
-                    <a href="{{ url.get('/frontend/material') }}" class="sidebar-link">
-                        <i class="bi bi-box"></i>
-                        <span>Material</span>
-                    </a>
-                </li>
-                <li
-                    {% if routeName == "budget-activity"  %}
-                         class="sidebar-item active"
-                    {% else %}
-                        class="sidebar-item"
-                    {% endif %}
-                >
-                    <a href="{{ url.get('/frontend/budget-activity') }}" class="sidebar-link">
-                        <i class="bi bi-cash-coin"></i>
-                        <span>Budget Activity</span>
                     </a>
                 </li>
                 <li
@@ -154,6 +107,56 @@
                         <span>Worker Data</span>
                     </a>
                 </li>
+                <li
+                    {% if routeName == "activity-setting"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/activity-setting') }}" class="sidebar-link">
+                        <i class="bi bi-sliders2-vertical"></i>
+                        <span>Activity Setting</span>
+                    </a>
+                </li>
+                <li
+                    {% if routeName == "material"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/material') }}" class="sidebar-link">
+                        <i class="bi bi-box"></i>
+                        <span>Material</span>
+                    </a>
+                </li>
+                <li class="sidebar-title">Project & Plot</li>
+                <li
+                    {% if routeName == "project"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/project') }}" class="sidebar-link">
+                        <i class="bi bi-kanban"></i>
+                        <span>Project</span>
+                    </a>
+                </li>
+                <li
+                    {% if routeName == "plot"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/plot') }}" class="sidebar-link">
+                        <i class="bi bi-clipboard-data"></i>
+                        <span>Plot</span>
+                    </a>
+                </li>
+                <li class="sidebar-title">Logging</li>
                 <li
                     {% if routeName == "supporting-material"  %}
                          class="sidebar-item active"
