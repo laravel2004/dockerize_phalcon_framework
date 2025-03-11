@@ -87,6 +87,27 @@
                 </table>
             </div>
         </div>
+        <div class="card-footer">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <?php if ($page->before) { ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?= $page->before ?>">Previous</a>
+                    </li>
+                    <?php } ?>
+                    <?php $v149528936500298041451iterator = range(1, $page->total_pages); $v149528936500298041451incr = 0; $v149528936500298041451loop = new stdClass(); $v149528936500298041451loop->self = &$v149528936500298041451loop; $v149528936500298041451loop->length = count($v149528936500298041451iterator); $v149528936500298041451loop->index = 1; $v149528936500298041451loop->index0 = 1; $v149528936500298041451loop->revindex = $v149528936500298041451loop->length; $v149528936500298041451loop->revindex0 = $v149528936500298041451loop->length - 1; ?><?php foreach ($v149528936500298041451iterator as $i) { ?><?php $v149528936500298041451loop->first = ($v149528936500298041451incr == 0); $v149528936500298041451loop->index = $v149528936500298041451incr + 1; $v149528936500298041451loop->index0 = $v149528936500298041451incr; $v149528936500298041451loop->revindex = $v149528936500298041451loop->length - $v149528936500298041451incr; $v149528936500298041451loop->revindex0 = $v149528936500298041451loop->length - ($v149528936500298041451incr + 1); $v149528936500298041451loop->last = ($v149528936500298041451incr == ($v149528936500298041451loop->length - 1)); ?>
+                    <li class="page-item <?php if ($i == $page->current) { ?>active<?php } ?>">
+                        <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                    <?php $v149528936500298041451incr++; } ?>
+                    <?php if ($page->next) { ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?= $page->next ?>">Next</a>
+                    </li>
+                    <?php } ?>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 

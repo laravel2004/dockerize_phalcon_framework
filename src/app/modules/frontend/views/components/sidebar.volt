@@ -23,6 +23,18 @@
                     </a>
                 </li>
                 <li
+                    {% if routeName == "payroll"  %}
+                         class="sidebar-item active"
+                    {% else %}
+                        class="sidebar-item"
+                    {% endif %}
+                >
+                    <a href="{{ url.get('/frontend/payroll') }}" class="sidebar-link">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Payroll</span>
+                    </a>
+                </li>
+                <li
                     {% if routeName == "report"  %}
                          class="sidebar-item active"
                     {% else %}

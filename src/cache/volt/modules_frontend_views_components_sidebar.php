@@ -23,6 +23,18 @@
                     </a>
                 </li>
                 <li
+                    <?php if ($routeName == 'payroll') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/payroll') ?>" class="sidebar-link">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Payroll</span>
+                    </a>
+                </li>
+                <li
                     <?php if ($routeName == 'report') { ?>
                          class="sidebar-item active"
                     <?php } else { ?>

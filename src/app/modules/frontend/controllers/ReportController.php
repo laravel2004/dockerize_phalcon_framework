@@ -6,6 +6,7 @@ use Erp_rmi\Modules\Frontend\Models\ActivityLog;
 use Erp_rmi\Modules\Frontend\Models\ActivitySetting;
 use Erp_rmi\Modules\Frontend\Models\BudgetActivity;
 use Erp_rmi\Modules\Frontend\Models\Material;
+use Erp_rmi\Modules\Frontend\Models\Payroll;
 use Erp_rmi\Modules\Frontend\Models\Plot;
 use Erp_rmi\Modules\Frontend\Models\Project;
 use Erp_rmi\Modules\Frontend\Models\SupportingMaterial;
@@ -145,6 +146,38 @@ class ReportController extends Controller
                     return $this->response->setJsonContent([
                         'status' => 'error',
                         'message' => 'Failed to save activity log'
+                    ]);
+                }
+
+                foreach ($worker_id as $w) {
+                    $worker = WorkerData::findFirstById($w);
+                    if (!$worker) {
+                        continue;
+                    }
+
+                    $payroll = new Payroll();
+                    $payroll->worker_data_id = $w;
+                    $payroll->activity_log_id = $activityLog->id;
+                    $payroll->cost = $cost->cost;
+                    $payroll->date = $start_date;
+                    $payroll->unit = $timeOfWorkPerPlot;
+                    $payroll->total_cost = $cost->cost * $timeOfWorkPerPlot;
+                    $payroll->status = 0;
+
+                    if (!$payroll->save()) {
+                        $this->db->rollback();
+                        return $this->response->setJsonContent([
+                            'status' => 'error',
+                            'message' => $payroll->getMessages()
+                        ]);
+                    }
+                }
+
+                if (!$payroll->save()) {
+                    $this->db->rollback();
+                    return $this->response->setJsonContent([
+                        'status' => 'error',
+                        'message' => $payroll->getMessages()
                     ]);
                 }
 

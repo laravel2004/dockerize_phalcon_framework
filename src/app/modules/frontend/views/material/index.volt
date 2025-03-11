@@ -56,6 +56,27 @@
                 </table>
             </div>
         </div>
+        <div class="card-footer">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page.before %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page.before }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    {% for i in 1..page.total_pages %}
+                    <li class="page-item {% if i == page.current %}active{% endif %}">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if page.next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page.next }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 
