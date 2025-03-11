@@ -277,10 +277,14 @@ class ReportController extends Controller
         ];
         $bind = [];
 
-        $yearDate = $this->request->getQuery('year', 'int', null);
-        if (!empty($yearDate)) {
-            $conditions[] = "YEAR(start_date) = :year:";
-            $bind["year"] = $yearDate;
+        $dateRange = $this->request->getQuery("date_range", "string", null);
+        if (!empty($dateRange)) {
+            $dateRange = explode(" - ", $dateRange);
+            $dateStart = date("Y-m-d", strtotime($dateRange[0]));
+            $dateEnd = date("Y-m-d", strtotime($dateRange[1]));
+            $conditions[] = "start_date BETWEEN :date_start: AND :date_end:";
+            $bind["date_start"] = $dateStart;
+            $bind["date_end"] = $dateEnd;
         }
 
         $plot_id = $this->request->getQuery('plot_id', 'string', null);
@@ -387,7 +391,6 @@ class ReportController extends Controller
 
         $plot_id = $this->request->getQuery('plot_id', 'string', null);
         $project_id = $this->request->getQuery('project_id', 'string', null);
-        $year = $this->request->getQuery('year', 'int', null);
 
         $conditions = ["deleted_at IS NULL"];
         $bind = [];
@@ -400,6 +403,19 @@ class ReportController extends Controller
         if (!empty($project_id)) {
             $conditions[] = "project_id = :project_id:";
             $bind["project_id"] = $project_id;
+        }
+
+        $conditionsLog = ["deleted_at IS NULL"];
+        $bindLog = [];
+        $dateRange = $this->request->getQuery("date_range", "string", null);
+
+        if (!empty($dateRange)) {
+            $dateRange = explode(" - ", $dateRange);
+            $dateStart = date("Y-m-d", strtotime($dateRange[0]));
+            $dateEnd = date("Y-m-d", strtotime($dateRange[1]));
+            $conditionsLog[] = "start_date BETWEEN :date_start: AND :date_end:";
+            $bindLog["date_start"] = $dateStart;
+            $bindLog["date_end"] = $dateEnd;
         }
 
         $queryOptions = [
@@ -418,10 +434,10 @@ class ReportController extends Controller
 
         foreach ($plotsArray as $plot) {
             $activityLogs = ActivityLog::find([
-                "conditions" => "plot_id = :plot_id:",
-                "bind" => [
+                "conditions" => "plot_id = :plot_id: AND " . implode(" AND ", $conditionsLog),
+                "bind" => array_merge($bindLog, [
                     "plot_id" => $plot['id']
-                ]
+                ])
             ]);
 
             $activity = [];
@@ -468,6 +484,110 @@ class ReportController extends Controller
 
         $this->view->setVar('data', $data);
         $this->view->setVar('terbilangTotal', $terbilangTotal);
+        $this->view->setVar('dateRange', $dateRange);
+    }
+
+    public function generateAction()
+    {
+        $this->view->title = 'Report Generate';
+        $this->view->subtitle = 'Reporting HO and Finance';
+        $this->view->routeName = "report-generate";
+
+        $plot_id = $this->request->getQuery('plot_id', 'string', null);
+        $project_id = $this->request->getQuery('project_id', 'string', null);
+
+        $conditions = ["deleted_at IS NULL"];
+        $bind = [];
+
+        if (!empty($plot_id)) {
+            $conditions[] = "id = :id:";
+            $bind["id"] = $plot_id;
+        }
+
+        if (!empty($project_id)) {
+            $conditions[] = "project_id = :project_id:";
+            $bind["project_id"] = $project_id;
+        }
+
+        $dateRange = $this->request->getQuery("date_range", "string", null);
+
+        $conditionsLog = ["deleted_at IS NULL"];
+        $bindLog = [];
+
+        if (!empty($dateRange)) {
+            $dateRange = explode(" - ", $dateRange);
+            $dateStart = date("Y-m-d", strtotime($dateRange[0]));
+            $dateEnd = date("Y-m-d", strtotime($dateRange[1]));
+            $conditionsLog[] = "start_date BETWEEN :date_start: AND :date_end:";
+            $bindLog["date_start"] = $dateStart;
+            $bindLog["date_end"] = $dateEnd;
+        }
+
+        $queryOptions = [
+            "conditions" => implode(" AND ", $conditions),
+            "bind" => $bind,
+            "order" => "created_at DESC",
+        ];
+
+        $plots = Plot::find($queryOptions);
+
+        $plotsArray = $plots->toArray();
+
+        $total_cost = 0;
+
+        $data = [];
+
+        foreach ($plotsArray as $plot) {
+            $activityLogs = ActivityLog::find([
+                "conditions" => "plot_id = :plot_id: AND " . implode(" AND ", $conditionsLog),
+                "bind" => array_merge($bindLog, [
+                    "plot_id" => $plot['id']
+                ])
+            ]);
+
+            $activity = [];
+            foreach ($activityLogs as $activityLog) {
+                $price = 0;
+                foreach ($activityLog->supportingMaterials as $supportingMaterial) {
+                    $price += $supportingMaterial->material->price * $supportingMaterial->item_needed;
+                }
+                $activity[] = [
+                    'name' => $activityLog->activitySetting->name,
+                    'unit' => $activityLog->time_of_work,
+                    'uom' => 'Hari',
+                    'total' => $activityLog->total_cost - $price
+                ];
+            }
+
+
+            foreach ($activityLogs as $activityLog) {
+                $price = 0;
+                foreach ($activityLog->supportingMaterials as $supportingMaterial) {
+                    $price += $supportingMaterial->material->price * $supportingMaterial->item_needed;
+                }
+                $total_cost += $activityLog->total_cost - $price;
+            }
+
+            $total_cost_activity = 0;
+
+            foreach ($activity as $act) {
+                $total_cost_activity += $act['total'];
+            }
+
+            $data[] = [
+                'plot' => $plot,
+                'activityLogs' => [
+                    'activity' => $activity,
+                    'total' => $total_cost_activity
+                ]
+            ];
+        }
+
+        $terbilangTotal = trim($this->terbilang($total_cost));
+
+        $this->view->setVar('data', $data);
+        $this->view->setVar('terbilangTotal', $terbilangTotal);
+        $this->view->setVar('dateRange', $dateRange);
     }
 
     private function terbilang($angka) {

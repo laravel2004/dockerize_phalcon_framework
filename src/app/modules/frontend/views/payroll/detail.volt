@@ -28,7 +28,7 @@
                 <tbody>
                     <tr>
                         <td>{{ data.ActivityLog.activitySetting.name }}</td>
-                        <td>{{ data.unit }} Hari x {{ data.cost }}</td>
+                        <td>{{ data.unit }} Hari x <span class="format-rupiah">{{ data.cost }}</span></td>
                         <td class="format-rupiah">{{ data.total_cost }}</td>
                     </tr>
                     <tr>

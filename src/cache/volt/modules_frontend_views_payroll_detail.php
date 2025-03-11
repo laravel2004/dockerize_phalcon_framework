@@ -10,6 +10,9 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="<?= $this->security->getToken() ?>">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 </head>
 
 <body>
@@ -59,7 +62,7 @@
                 <tbody>
                     <tr>
                         <td><?= $data->ActivityLog->activitySetting->name ?></td>
-                        <td><?= $data->unit ?> Hari x <?= $data->cost ?></td>
+                        <td><?= $data->unit ?> Hari x <span class="format-rupiah"><?= $data->cost ?></span></td>
                         <td class="format-rupiah"><?= $data->total_cost ?></td>
                     </tr>
                     <tr>

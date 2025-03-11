@@ -218,6 +218,7 @@ class PayrollController extends Controller
         $this->view->setVar('data', $payroll);
         $this->view->setVar('totalCost', $totalCost);
         $this->view->setVar('terbilangTotal', $terbilangTotal);
+        $this->view->setVar('dateRange', $dateRange);
     }
 
     private function terbilang($angka) {

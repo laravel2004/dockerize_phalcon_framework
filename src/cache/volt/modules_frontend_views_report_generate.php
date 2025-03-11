@@ -45,9 +45,11 @@
                 <img src="<?= $this->url->get('img/logo.png') ?>" alt="logo" class="img-fluid" style="width: 150px; height:100px;">
                 <h3 class="fw-bold">N1</h3>
             </div>
+
             <div class="text-center fw-bold">
                 Periode: <?= $dateRange[0] ?> - <?= $dateRange[1] ?>
             </div>
+
             <div>
                 <?php if ($this->length($data) == 0) { ?>
                 <?php } else { ?>

@@ -10,6 +10,9 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="<?= $this->security->getToken() ?>">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 </head>
 
 <body>
@@ -41,6 +44,7 @@
                 </div>
                 <div class="col-8 text-end">
                     <button  id="btn-summarize" class="btn btn-success fw-semibold">Summarize</button>
+                    <button  id="btn-generate" class="btn btn-warning text-white fw-semibold">Generate Report</button>
                 </div>
             </div>
             <form method="GET" action="/frontend/report/history">
@@ -53,18 +57,13 @@
                             <?php } ?>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select name="plot_id" id="plot_id" class="form-control text-center">
                             <option value="" >All Plot</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <select name="year" class="form-control text-center">
-                            <option value="">Select Year Budget</option>
-                            <?php foreach ($years as $year) { ?>
-                                <option value="<?= $year ?>"><?= $year ?></option>
-                            <?php } ?>
-                        </select>
+                    <div class="col-md-4">
+                        <input type="text" name="date_range" id="date_range" class="form-control text-center" placeholder="Select Date Range">
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-primary w-100">Search</button>
@@ -124,6 +123,21 @@
 <script>
 $(document).ready(function () {
 
+        $('#date_range').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
     $('#project_id').change(function () {
         var projectId = $(this).val();
 
@@ -161,6 +175,11 @@ $(document).ready(function () {
     $('#btn-summarize').click(function() {
         $query = window.location.search;
         window.location.href = '/frontend/report/summarize' + $query;
+    });
+
+    $('#btn-generate').click(function() {
+        $query = window.location.search;
+        window.location.href = '/frontend/report/generate' + $query;
     });
 });
 </script>

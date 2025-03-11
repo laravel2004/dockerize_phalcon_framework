@@ -10,6 +10,9 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="<?= $this->security->getToken() ?>">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 </head>
 
 <body>
@@ -41,6 +44,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <img src="<?= $this->url->get('img/logo.png') ?>" alt="logo" class="img-fluid" style="width: 150px; height:100px;">
                 <h3 class="fw-bold">N1</h3>
+            </div>
+            <div class="text-center fw-bold">
+                <?php if (($dateRange)) { ?>
+                    Periode: <?= $dateRange[0] ?> - <?= $dateRange[1] ?>
+                <?php } ?>
             </div>
             <div class="d-flex flex-column my-3">
                 <div><strong>Nama:</strong> <?= $data[0]->WorkerData->name ?></div>
