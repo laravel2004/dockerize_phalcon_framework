@@ -545,16 +545,23 @@ class ReportController extends Controller
                 ])
             ]);
 
+            $projectCode = Project::findFirstById($plot['project_id']);
+
             $activity = [];
             foreach ($activityLogs as $activityLog) {
                 $price = 0;
                 foreach ($activityLog->supportingMaterials as $supportingMaterial) {
                     $price += $supportingMaterial->material->price * $supportingMaterial->item_needed;
                 }
+
                 $activity[] = [
                     'name' => $activityLog->activitySetting->name,
+                    'cost' => $activityLog->activitySetting->typeActivity->cost,
+                    'plot' => $plot['code'],
+                    'project_code' => $projectCode->code,
                     'unit' => $activityLog->time_of_work,
                     'uom' => 'Hari',
+                    'date' => $activityLog->start_date,
                     'total' => $activityLog->total_cost - $price
                 ];
             }

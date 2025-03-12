@@ -37,6 +37,11 @@
                 
 
 <style>
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
     @media print {
         body {
             visibility: hidden;
@@ -53,7 +58,7 @@
         }
 
         @page {
-            size: A4 portrait !important;
+            size: A4 landscape !important;
             margin: 5mm !important;
         }
 
@@ -80,45 +85,57 @@
             </div>
 
             <div class="text-center fw-bold">
-                Periode: <?= $dateRange[0] ?> - <?= $dateRange[1] ?>
+                <?php if (($dateRange)) { ?>
+                    Periode: <?= $dateRange[0] ?> - <?= $dateRange[1] ?>
+                <?php } ?>
             </div>
-
-            <?php foreach ($data as $item) { ?>
-                <div class="mt-5"></div>
-                <div class="d-flex flex-column my-3">
-                    <div><strong>Petak Tanah (Plot):</strong> <?= $item['plot']['code'] ?></div>
-                    <div><strong>Luasan Plot:</strong> <?= $item['plot']['wide'] ?> Hectare</div>
-                </div>
-
-                <table class="table table-bordered text-center">
+            <div class="table-responsive">
+                <table class="table table-bordered mt-5 text-center">
                     <thead class="table-light">
                         <tr>
-                            <th>Aktivitas / Material</th>
-                            <th>Jumlah</th>
-                            <th>Jumlah Uang</th>
+                            <th>Date</th>
+                            <th>Labor</th>
+                            <th>Id Field</th>
+                            <th>Area(Ha)</th>
+                            <th>Project Code</th>
+                            <th>Time</th>
+                            <th>Cost / Time</th>
+                            <th>Cost</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($item['activityLogs']['activity'] as $activityLog) { ?>
+                        <?php foreach ($data as $item) { ?>
+                            <?php foreach ($item['activityLogs']['activity'] as $activityLog) { ?>
+                                <tr>
+                                    <th><?= $activityLog['date'] ?></th>
+                                    <td><?= $activityLog['name'] ?></td>
+                                    <td><?= $activityLog['plot'] ?></td>
+                                    <td><?= $item['plot']['wide'] ?> Ha</td>
+                                    <td><?= $activityLog['project_code'] ?></td>
+                                    <td><?= $activityLog['unit'] ?> <?= $activityLog['uom'] ?></td>
+                                    <td class="format-rupiah"><?= $activityLog['cost'] ?></td>
+                                   <td class="format-rupiah"><?= $activityLog['total'] ?></td>
+                                </tr>
+                            <?php } ?>
                             <tr>
-                                <td><?= $activityLog['name'] ?></td>
-                                <td><?= $activityLog['unit'] ?> <?= $activityLog['uom'] ?></td>
-                                <td class="format-rupiah"><?= $activityLog['total'] ?></td>
+                                <th colspan="7">Total</th>
+                                <th class="format-rupiah"><?= $item['activityLogs']['total'] ?></th>
                             </tr>
                         <?php } ?>
-                        <tr>
-                            <th colspan="2">Total</th>
-                            <th class="format-rupiah"><?= $item['activityLogs']['total'] ?></th>
-                        </tr>
+                            <tr>
+                                <th colspan="2">Grand Total</th>
+                                <th colspan="7" class="format-rupiah"><?= $totalCost ?></th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Terbilang</th>
+                                <th colspan="7" class="format-rupiah"><?= $terbilangTotal ?></th>
+                            </tr>
                     </tbody>
                 </table>
-            <?php } ?>
-
-            <p class="fw-bold">Nominal: <span class="format-rupiah"><?= $totalCost ?></span></p>
-            <p class="fw-bold">Terbilang: <span class="text-uppercase"><?= $terbilangTotal ?></span></p>
+            </div>
             <div class="page-break"></div>
             <div class="p-4">
-                <div class="row text-center mt-4 justify-content-center">
+                <div class="row text-center mt-2 justify-content-center">
                     <p><strong>Diajukan oleh:</strong></p>
                     <div class="col-5">
                         <br /><br /><br /><br />
@@ -136,7 +153,7 @@
                     </div>
                 </div>
 
-                <div class="row text-center mt-4 justify-content-center">
+                <div class="row text-center mt-2 justify-content-center">
                     <p><strong>Diketahui oleh:</strong></p>
                     <div class="col-5">
                         <br /><br /><br /><br />
@@ -154,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="row text-center mt-4 justify-content-center">
+                <div class="row text-center mt-2 justify-content-center">
                     <p><strong>Disetujui oleh:</strong></p>
                     <div class="col-5">
                         <br /><br /><br /><br />
@@ -166,8 +183,6 @@
                 </div>
             </div>
         </div>
-        <br/>
-        <p class="text-center mt-4">&copy; On Farm PT Rejoso Manis Indo</p>
     </div>
 
     <div class="text-center mt-4">
