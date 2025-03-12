@@ -587,6 +587,7 @@ class ReportController extends Controller
 
         $this->view->setVar('data', $data);
         $this->view->setVar('terbilangTotal', $terbilangTotal);
+        $this->view->setVar('totalCost', $total_cost);
         $this->view->setVar('dateRange', $dateRange);
     }
 
