@@ -95,13 +95,13 @@
                         <tr>
                             <th>Date</th>
                             <th>Labor</th>
-                            <th>Id Field</th>
-                            <th>Project Code</th>
-                            <th>Area(Ha)</th>
                             <th>Time</th>
                             <th>Cost / Time</th>
                             <th>Cost</th>
                             <th>Total</th>
+                            <th>Area(Ha)</th>
+                            <th>Id Field</th>
+                            <th>Project Code</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,18 +110,20 @@
                                 <tr>
                                     <th><?= $activityLog['date'] ?></th>
                                     <td><?= $activityLog['name'] ?></td>
-                                    <?php if (($activityLog['row_plot'] != 0)) { ?>
-                                        <td rowspan="<?= $activityLog['row_plot'] ?>" ><?= $activityLog['plot'] ?></td>
-                                    <?php } ?>
-                                    <?php if (($activityLog['row_project'] != 0)) { ?>
-                                        <td rowspan="<?= $activityLog['row_project'] ?>" ><?= $activityLog['project_code'] ?></td>
-                                    <?php } ?>
-                                    <td><?= $item['plot']['wide'] ?> Ha</td>
                                     <td><?= $activityLog['unit'] ?> <?= $activityLog['uom'] ?></td>
                                     <td class="format-rupiah"><?= $activityLog['cost'] ?></td>
                                    <td class="format-rupiah"><?= $activityLog['total'] ?></td>
                                     <?php if (($activityLog['row_plot'] != 0)) { ?>
                                         <td class="format-rupiah" rowspan="<?= $activityLog['row_plot'] ?>" ><?= $item['activityLogs']['total'] ?></td>
+                                    <?php } ?>
+                                    <?php if (($activityLog['row_plot'] != 0)) { ?>
+                                        <td rowspan="<?= $activityLog['row_plot'] ?>" ><?= $item['plot']['wide'] ?> Ha</td>
+                                    <?php } ?>
+                                    <?php if (($activityLog['row_plot'] != 0)) { ?>
+                                        <td rowspan="<?= $activityLog['row_plot'] ?>" ><?= $activityLog['plot'] ?></td>
+                                    <?php } ?>
+                                    <?php if (($activityLog['row_project'] != 0)) { ?>
+                                        <td rowspan="<?= $activityLog['row_project'] ?>" ><?= $activityLog['project_code'] ?></td>
                                     <?php } ?>
                                 </tr>
                             <?php } ?>

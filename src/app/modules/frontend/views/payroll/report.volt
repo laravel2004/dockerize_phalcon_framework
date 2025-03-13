@@ -12,9 +12,9 @@
                 <h3 class="fw-bold">N1</h3>
             </div>
             <div class="text-center fw-bold">
-                {%if(dateRange)%}
+                {% if(dateRange)%}
                     Periode: {{ dateRange[0] }} - {{ dateRange[1] }}
-                {%endif%}
+                {% endif %}
             </div>
             <div class="d-flex flex-column my-3">
                 <div><strong>Nama:</strong> {{ data[0].WorkerData.name }}</div>
