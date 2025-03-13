@@ -124,20 +124,7 @@
 
 <script>
 $(document).ready(function () {
-        $('#date_range').daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                cancelLabel: 'Clear'
-            }
-        });
 
-        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
-
-        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
-            $(this).val('');
-        });
 
     $('.btn-bayar').click(function() {
         const id = $(this).data('id');
@@ -196,6 +183,20 @@ $(document).ready(function () {
         $query = window.location.search;
         window.location.href = '/frontend/payroll/report' + $query;
     });
+    $('#date_range').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
 });
 </script>
 

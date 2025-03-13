@@ -495,6 +495,7 @@ class ReportController extends Controller
 
         $plot_id = $this->request->getQuery('plot_id', 'string', null);
         $project_id = $this->request->getQuery('project_id', 'string', null);
+        $dateRange = $this->request->getQuery("date_range", "string", null);
 
         $conditions = ["deleted_at IS NULL"];
         $bind = [];
@@ -508,8 +509,6 @@ class ReportController extends Controller
             $conditions[] = "project_id = :project_id:";
             $bind["project_id"] = $project_id;
         }
-
-        $dateRange = $this->request->getQuery("date_range", "string", null);
 
         $conditionsLog = ["deleted_at IS NULL"];
         $bindLog = [];
@@ -530,25 +529,50 @@ class ReportController extends Controller
         ];
 
         $plots = Plot::find($queryOptions);
-
         $plotsArray = $plots->toArray();
 
-        $total_cost = 0;
-
-        $data = [];
+        $plotActivityCounts = [];
+        $projectActivityCounts = [];
 
         foreach ($plotsArray as $plot) {
             $activityLogs = ActivityLog::find([
                 "conditions" => "plot_id = :plot_id: AND " . implode(" AND ", $conditionsLog),
-                "bind" => array_merge($bindLog, [
-                    "plot_id" => $plot['id']
-                ])
+                "bind" => array_merge($bindLog, ["plot_id" => $plot['id']])
             ]);
 
-            $projectCode = Project::findFirstById($plot['project_id']);
+            $count = count($activityLogs);
+            if ($count > 0) {
+                $plotActivityCounts[$plot['id']] = $count;
 
+                $projectCode = Project::findFirstById($plot['project_id'])->code;
+                if (!isset($projectActivityCounts[$projectCode])) {
+                    $projectActivityCounts[$projectCode] = 1;
+                }
+                $projectActivityCounts[$projectCode] += $count;
+            }
+        }
+
+        $total_cost = 0;
+        $data = [];
+        $last_plot_id = null;
+        $last_project_code = null;
+
+        foreach ($plotsArray as $index => $plot) {
+            $activityLogs = ActivityLog::find([
+                "conditions" => "plot_id = :plot_id: AND " . implode(" AND ", $conditionsLog),
+                "bind" => array_merge($bindLog, ["plot_id" => $plot['id']])
+            ]);
+
+            $projectCode = Project::findFirstById($plot['project_id'])->code;
             $activity = [];
-            foreach ($activityLogs as $activityLog) {
+
+            $isNewPlot = $plot['id'] !== $last_plot_id;
+            $isNewProject = $projectCode !== $last_project_code;
+
+            $row_plot = $isNewPlot ? ($plotActivityCounts[$plot['id']] ?? 1) : 0;
+            $row_project = $isNewProject ? ($projectActivityCounts[$projectCode] ?? 1) : 0;
+
+            foreach ($activityLogs as $actIndex => $activityLog) {
                 $price = 0;
                 foreach ($activityLog->supportingMaterials as $supportingMaterial) {
                     $price += $supportingMaterial->material->price * $supportingMaterial->item_needed;
@@ -558,14 +582,15 @@ class ReportController extends Controller
                     'name' => $activityLog->activitySetting->name,
                     'cost' => $activityLog->activitySetting->typeActivity->cost,
                     'plot' => $plot['code'],
-                    'project_code' => $projectCode->code,
+                    'project_code' => $projectCode,
                     'unit' => $activityLog->time_of_work,
                     'uom' => 'Hari',
                     'date' => $activityLog->start_date,
-                    'total' => $activityLog->total_cost - $price
+                    'total' => $activityLog->total_cost - $price,
+                    'row_plot' => ($actIndex == 0) ? $row_plot : 0,
+                    'row_project' => ($actIndex == 0 && $row_plot > 0) ? $row_project : 0,
                 ];
             }
-
 
             foreach ($activityLogs as $activityLog) {
                 $price = 0;
@@ -575,17 +600,30 @@ class ReportController extends Controller
                 $total_cost += $activityLog->total_cost - $price;
             }
 
-            $total_cost_activity = 0;
+            $total_cost_activity = array_sum(array_column($activity, 'total'));
 
-            foreach ($activity as $act) {
-                $total_cost_activity += $act['total'];
+            if (!empty($activity)) {
+                $data[] = [
+                    'plot' => $plot,
+                    'activityLogs' => [
+                        'activity' => $activity,
+                        'total' => $total_cost_activity
+                    ]
+                ];
             }
 
+            $last_plot_id = $plot['id'];
+            $last_project_code = $projectCode;
+        }
+
+        if (!isset($projectActivityCounts[$last_project_code])) {
+            $row_project = $projectActivityCounts[$last_project_code] ?? 1;
             $data[] = [
-                'plot' => $plot,
+                'plot' => ['code' => '-'],
                 'activityLogs' => [
-                    'activity' => $activity,
-                    'total' => $total_cost_activity
+                    'activity' => [],
+                    'total' => 0,
+                    'row_project' => $row_project
                 ]
             ];
         }
@@ -597,7 +635,6 @@ class ReportController extends Controller
         $this->view->setVar('totalCost', $total_cost);
         $this->view->setVar('dateRange', $dateRange);
     }
-
     private function terbilang($angka) {
         $angka = abs($angka);
         $bilangan = array("", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas");

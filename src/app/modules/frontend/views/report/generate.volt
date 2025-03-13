@@ -62,11 +62,12 @@
                             <th>Date</th>
                             <th>Labor</th>
                             <th>Id Field</th>
-                            <th>Area(Ha)</th>
                             <th>Project Code</th>
+                            <th>Area(Ha)</th>
                             <th>Time</th>
                             <th>Cost / Time</th>
                             <th>Cost</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,26 +76,31 @@
                                 <tr>
                                     <th>{{ activityLog['date'] }}</th>
                                     <td>{{ activityLog['name'] }}</td>
-                                    <td>{{ activityLog['plot'] }}</td>
+                                    {% if (activityLog['row_plot'] != 0) %}
+                                        <td rowspan="{{ activityLog['row_plot'] }}" >{{ activityLog['plot'] }}</td>
+                                    {% endif %}
+                                    {% if (activityLog['row_project'] != 0) %}
+                                        <td rowspan="{{ activityLog['row_project'] }}" >{{ activityLog['project_code'] }}</td>
+                                    {% endif %}
                                     <td>{{ item['plot']['wide'] }} Ha</td>
-                                    <td>{{ activityLog['project_code'] }}</td>
                                     <td>{{ activityLog['unit'] }} {{ activityLog['uom'] }}</td>
                                     <td class="format-rupiah">{{ activityLog['cost'] }}</td>
                                    <td class="format-rupiah">{{ activityLog['total'] }}</td>
+                                    {% if (activityLog['row_plot'] != 0) %}
+                                        <td class="format-rupiah" rowspan="{{ activityLog['row_plot'] }}" >{{ item['activityLogs']['total'] }}</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             <tr>
-                                <th colspan="7">Total</th>
-                                <th class="format-rupiah">{{ item['activityLogs']['total'] }}</th>
                             </tr>
                         {% endfor %}
                             <tr>
-                                <th colspan="2">Grand Total</th>
-                                <th colspan="7" class="format-rupiah">{{ totalCost }}</th>
+                                <th colspan="3">Grand Total</th>
+                                <th colspan="8" class="format-rupiah">{{ totalCost }}</th>
                             </tr>
                             <tr>
-                                <th colspan="2">Terbilang</th>
-                                <th colspan="7" class="format-rupiah">{{ terbilangTotal }}</th>
+                                <th colspan="3">Terbilang</th>
+                                <th colspan="8" class="format-rupiah">{{ terbilangTotal }}</th>
                             </tr>
                     </tbody>
                 </table>
