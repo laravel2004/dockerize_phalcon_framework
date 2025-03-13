@@ -61,8 +61,7 @@
                         <tr>
                             <th>Date</th>
                             <th>Labor</th>
-                            <th>Time</th>
-                            <th>Cost / Time</th>
+                            <th>Cost/Worker/Time</th>
                             <th>Cost</th>
                             <th>Total</th>
                             <th>Area(Ha)</th>
@@ -76,8 +75,7 @@
                                 <tr>
                                     <th>{{ activityLog['date'] }}</th>
                                     <td>{{ activityLog['name'] }}</td>
-                                    <td>{{ activityLog['unit'] }} {{ activityLog['uom'] }}</td>
-                                    <td class="format-rupiah">{{ activityLog['cost'] }}</td>
+                                    <td><span class="format-rupiah">{{ activityLog['cost'] }}</span>x{{ activityLog['worker'] }}x{{ activityLog['unit'] }}</td>
                                    <td class="format-rupiah">{{ activityLog['total'] }}</td>
                                     {% if (activityLog['row_plot'] != 0) %}
                                         <td class="format-rupiah" rowspan="{{ activityLog['row_plot'] }}" >{{ item['activityLogs']['total'] }}</td>
@@ -141,7 +139,7 @@
                         <div class="d-flex justify-content-center">
                             <span class="border-bottom border-dark border-1 w-75"><strong>Syahrul Istad</strong></span>
                         </div>
-                        <p>Plat Manager Dept</p>
+                        <p>Plant Manager Dept</p>
                     </div>
                 </div>
 

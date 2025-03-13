@@ -585,6 +585,7 @@ class ReportController extends Controller
                     'project_code' => $projectCode,
                     'unit' => $activityLog->time_of_work,
                     'uom' => 'Hari',
+                    'worker' => $activityLog->total_worker,
                     'date' => $activityLog->start_date,
                     'total' => $activityLog->total_cost - $price,
                     'row_plot' => ($actIndex == 0) ? $row_plot : 0,
