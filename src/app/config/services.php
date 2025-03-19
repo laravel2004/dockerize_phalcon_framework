@@ -84,20 +84,3 @@ $di->setShared('voltShared', function ($view) {
 
     return $volt;
 });
-
-$di->setShared('cache', function () {
-    $serializerFactory = new SerializerFactory();
-
-    $options = [
-        'defaultSerializer' => 'Json',
-        'lifetime' => 3600,
-        'host' => 'redis',
-        'port' => 6379,
-        'presistent' => false,
-        'index' => 1,
-    ];
-
-    $adapter = new Redis($serializerFactory, $options);
-    return new Cache($adapter);
-});
-

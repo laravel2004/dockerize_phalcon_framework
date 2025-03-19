@@ -50,12 +50,12 @@ class AbsensiController extends Controller
             $workerName = $payroll->WorkerData->name;
 
             if (!isset($attendanceData[$workerName])) {
-                $attendanceData[$workerName] = array_fill_keys($dates, "Tidak Hadir");
+                $attendanceData[$workerName] = array_fill_keys($dates, "0");
             }
 
             foreach ($dates as $date) {
                 if ($date >= $activityLog->start_date && $date <= $activityLog->end_date) {
-                    $attendanceData[$workerName][$date] = "Hadir";
+                    $attendanceData[$workerName][$date] = "1";
                 }
             }
         }
