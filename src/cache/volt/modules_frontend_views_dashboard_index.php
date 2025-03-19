@@ -10,6 +10,10 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="<?= $this->security->getToken() ?>">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 
 <body>
@@ -81,6 +85,14 @@
     </div>
     <div>
         <h4 class="fw-bold">Current Actual Budget</h4>
+        <select name="project_id" id="project_id" class="form-control text-center my-4">
+            <option value="">All Project</option>
+                <?php foreach ($projects as $project) { ?>
+                    <option value="<?= $project->id ?>" <?php if ($project->id == $project_id) { ?>selected<?php } ?>>
+                        <?= $project->project ?> - <?= $project->code ?>
+                    </option>
+                <?php } ?>
+        </select>
         <div class="row mb-4">
             <?php if (($this->length($activities) === 0)) { ?>
                 <div class="col-md-12">
@@ -109,7 +121,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-light text-center">
-                                <a href="/frontend/report/history" class="btn btn-primary btn-sm">View Details</a>
+                                <a href="/frontend/dashboard/detail/<?= $activity['id'] ?>" class="btn btn-primary btn-sm">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -117,9 +129,22 @@
             <?php } ?>
         </div>
     </div>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="fw-bold">Statistic Budget Actual</h4>
+            <div id="chart"></div>
+        </div>
+    </div>
 </div>
 <script>
     $(document).ready(function() {
+
+        $('#project_id').change(function () {
+            const project_id = $(this).val();
+            window.location.href = `/frontend/dashboard?project_id=${project_id}`
+//             console.log(project_id)
+        })
+
         $('.format-rupiah').each(function () {
             var angka = parseFloat($(this).text().trim());
             if (!isNaN(angka)) {
@@ -131,8 +156,56 @@
                 $(this).text(formatted);
             }
         });
+
+        $.ajax({
+            url: "/frontend/dashboard/data",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+            console.log(response);
+                var options = {
+                    chart: {
+                        type: 'line'
+                    },
+                    series: response.series,
+                    xaxis: {
+                        categories: response.categories
+                    },
+                    yaxis: {
+                        labels: {
+                            formatter: function (value) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(value);
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (value) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(value);
+                            }
+                        }
+                    }
+                };
+
+                var chart = new ApexCharts($("#chart")[0], options);
+                chart.render();
+            },
+            error: function (xhr, status, error) {
+                console.log("Error loading chart data:", error);
+            }
+        });
+
     });
 </script>
+
 
             </div>
             <?= $this->partial('components/footer') ?>

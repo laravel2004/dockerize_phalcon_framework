@@ -18,8 +18,8 @@ class ReportController extends Controller
 {
     public function indexAction()
     {
-        $this->view->title = 'Report';
-        $this->view->subtitle = 'List of Report';
+        $this->view->title = 'Activity Input';
+        $this->view->subtitle = 'Input Activity and Supporting Material';
         $this->view->routeName = "report";
 
         $this->view->setVars([
@@ -252,10 +252,51 @@ class ReportController extends Controller
         }
     }
 
+    public function deleteAction($id)
+    {
+        try {
+            $activityLog = ActivityLog::findFirstById($id);
+
+            if (!$activityLog) {
+                return $this->response
+                    ->setStatusCode(404, "Not Found")
+                    ->setJsonContent([
+                        'status' => 'error',
+                        'message' => 'Activity Log tidak ditemukan'
+                    ]);
+            }
+
+            if (!$activityLog->delete()) {
+                return $this->response
+                    ->setStatusCode(500, "Internal Server Error")
+                    ->setJsonContent([
+                        'status' => 'error',
+                        'message' => 'Gagal menghapus Activity Log'
+                    ]);
+            }
+
+            return $this->response
+                ->setStatusCode(200, "OK")
+                ->setJsonContent([
+                    'status' => 'success',
+                    'message' => 'Activity Log berhasil dihapus'
+                ]);
+
+        } catch (\Exception $error) {
+            return $this->response
+                ->setStatusCode(500, "Internal Server Error")
+                ->setJsonContent([
+                    'status' => 'error',
+                    'message' => 'Terjadi kesalahan saat menghapus Activity Log',
+                    'error' => $error->getMessage()
+                ]);
+        }
+    }
+
     public function historyAction()
     {
-        $this->view->title = 'Report History';
-        $this->view->subtitle = 'List of Report History';
+        $this->view->title = 'History Activity';
+        $this->view->subtitle = 'List of Report History Activity';
         $this->view->routeName = "report-history";
         $this->request->getQuery('plot', 'string', '');
         $this->request->getQuery('material', 'string', '');
@@ -661,6 +702,21 @@ class ReportController extends Controller
         } else {
             return "Angka terlalu besar!";
         }
+    }
+
+    public function searchProjectAction($id)
+    {
+        $this->view->disable();
+        $plots = Plot::find([
+           "conditions" => "project_id = :project_id:" ,
+            "bind" => [
+                "project_id" => $id
+            ]
+        ]);
+
+        return $this->response->setJsonContent([
+            'plots' => $plots
+        ]);
     }
 
 }

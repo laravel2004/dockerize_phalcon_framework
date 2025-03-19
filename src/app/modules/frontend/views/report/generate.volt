@@ -40,6 +40,7 @@
 </style>
 
 <div class="container my-4">
+    <for
     <div class="card shadow-sm p-4" id="print-area">
         <div class="text-center mb-3">
             <h5 class="fw-bold">REKAP KEGIATAN LAHAN TS KAULON BIBIT PLANT CANE</h5>
@@ -56,38 +57,42 @@
                 {% endif %}
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered mt-5 text-center">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Labor</th>
-                            <th>Cost/Worker/Time</th>
-                            <th>Cost</th>
-                            <th>Total</th>
-                            <th>Area(Ha)</th>
-                            <th>Id Field</th>
-                            <th>Project Code</th>
+                <table class="table fw-bold table-bordered mt-5 text-center">
+                    <thead class="bg-primary">
+                        <tr class="fw-bold">
+                            <th class="text-dark">Date</th>
+                            <th class="text-dark">Labor</th>
+                            <th class="text-dark">Cost/Worker</th>
+                            <th class="text-dark">Total Worker</th>
+                            <th class="text-dark"> Total Time</th>
+                            <th class="text-dark">Cost</th>
+                            <th class="text-dark">Total</th>
+                            <th class="text-dark">Area(Ha)</th>
+                            <th class="text-dark">Id Field</th>
+                            <th class="text-dark">Project Code</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in data%}
                             {% for activityLog in item['activityLogs']['activity']  %}
                                 <tr>
-                                    <th>{{ activityLog['date'] }}</th>
-                                    <td>{{ activityLog['name'] }}</td>
-                                    <td><span class="format-rupiah">{{ activityLog['cost'] }}</span>x{{ activityLog['worker'] }}x{{ activityLog['unit'] }}</td>
-                                   <td class="format-rupiah">{{ activityLog['total'] }}</td>
+                                    <th class="text-dark">{{ activityLog['date'] }}</th>
+                                    <td class="text-dark">{{ activityLog['name'] }}</td>
+                                    <td class="text-dark"><span class="format-rupiah text-dark">{{ activityLog['cost'] }}</span></td>
+                                    <td class="text-dark">{{ activityLog['worker'] }} Worker</td>
+                                    <td class="text-dark">{{ activityLog['unit'] }} {{ activityLog['uom'] }}</td>
+                                   <td class="format-rupiah text-dark">{{ activityLog['total'] }}</td>
                                     {% if (activityLog['row_plot'] != 0) %}
-                                        <td class="format-rupiah" rowspan="{{ activityLog['row_plot'] }}" >{{ item['activityLogs']['total'] }}</td>
+                                        <td class="format-rupiah text-dark" rowspan="{{ activityLog['row_plot'] }}" >{{ item['activityLogs']['total'] }}</td>
                                     {% endif %}
                                     {% if (activityLog['row_plot'] != 0) %}
-                                        <td rowspan="{{ activityLog['row_plot'] }}" >{{ item['plot']['wide'] }} Ha</td>
+                                        <td class="text-dark" rowspan="{{ activityLog['row_plot'] }}" >{{ item['plot']['wide'] }} Ha</td>
                                     {% endif %}
                                     {% if (activityLog['row_plot'] != 0) %}
-                                        <td rowspan="{{ activityLog['row_plot'] }}" >{{ activityLog['plot'] }}</td>
+                                        <td class="text-dark" rowspan="{{ activityLog['row_plot'] }}" >{{ activityLog['plot'] }}</td>
                                     {% endif %}
                                     {% if (activityLog['row_project'] != 0) %}
-                                        <td rowspan="{{ activityLog['row_project'] }}" >{{ activityLog['project_code'] }}</td>
+                                        <td class="text-dark" rowspan="{{ activityLog['row_project'] }}" >{{ activityLog['project_code'] }}</td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
@@ -95,60 +100,54 @@
                             </tr>
                         {% endfor %}
                             <tr>
-                                <th colspan="3">Grand Total</th>
-                                <th colspan="8" class="format-rupiah">{{ totalCost }}</th>
+                                <th class="text-dark bg-warning" colspan="3">Grand Total</th>
+                                <th class="text-dark bg-warning" colspan="8" class="format-rupiah">{{ totalCost }}</th>
                             </tr>
                             <tr>
-                                <th colspan="3">Terbilang</th>
-                                <th colspan="8" class="format-rupiah">{{ terbilangTotal }}</th>
+                                <th class="text-dark bg-success" colspan="3">Terbilang</th>
+                                <th class="text-dark bg-success" colspan="8" class="format-rupiah">{{ terbilangTotal }}</th>
                             </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="page-break"></div>
+<!--             <div class="page-break"></div> -->
             <div class="p-4">
                 <div class="row text-center mt-2 justify-content-center">
-                    <p><strong>Diajukan oleh:</strong></p>
-                    <div class="col-5">
+                    <p class="col-4"><strong>Diajukan oleh:</strong></p>
+                    <p class="col-4"><strong>Diketahui oleh:</strong></p>
+                    <p class="col-4"><strong>Disetujui oleh:</strong></p>
+                    <div class="col-2">
                         <br /><br /><br /><br />
                         <div class="d-flex justify-content-center">
-                            <span class="border-bottom border-dark border-1 w-75"><strong>Fuat Agus Setiawan</strong></span>
+                            <span class="border-bottom border-dark border-1"><strong>Fuat Agus Setiawan</strong></span>
                         </div>
                         <p>Petugas TS</p>
                     </div>
-                    <div class="col-5">
+                    <div class="col-2">
                         <br /><br /><br /><br />
                         <div class="d-flex justify-content-center">
-                            <span class="border-bottom border-dark border-1 w-75"><strong>Praphan Wetbanphot</strong></span>
+                            <span class="border-bottom border-dark border-1"><strong>Praphan Wetbanphot</strong></span>
                         </div>
                         <p>Sugarcane Supply Officer</p>
                     </div>
-                </div>
-
-                <div class="row text-center mt-2 justify-content-center">
-                    <p><strong>Diketahui oleh:</strong></p>
-                    <div class="col-5">
+                    <div class="col-2">
                         <br /><br /><br /><br />
                         <div class="d-flex justify-content-center">
-                            <span class="border-bottom border-dark border-1 w-75"><strong>Rahmat Jainuri</strong></span>
+                            <span class="border-bottom border-dark border-1"><strong>Rahmat Jainuri</strong></span>
                         </div>
                         <p>Section Head</p>
                     </div>
-                    <div class="col-5">
+                    <div class="col-2">
                         <br /><br /><br /><br />
                         <div class="d-flex justify-content-center">
-                            <span class="border-bottom border-dark border-1 w-75"><strong>Syahrul Istad</strong></span>
+                            <span class="border-bottom border-dark border-1"><strong>Syahrul Istad</strong></span>
                         </div>
                         <p>Plant Manager Dept</p>
                     </div>
-                </div>
-
-                <div class="row text-center mt-2 justify-content-center">
-                    <p><strong>Disetujui oleh:</strong></p>
-                    <div class="col-5">
+                    <div class="col-4">
                         <br /><br /><br /><br />
                         <div class="d-flex justify-content-center">
-                            <span class="border-bottom border-dark border-1 w-75"><strong>Apichart Sreewarome</strong></span>
+                            <span class="border-bottom border-dark border-1"><strong>Apichart Sreewarome</strong></span>
                         </div>
                         <p>Plantation Manager</p>
                     </div>

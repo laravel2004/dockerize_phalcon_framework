@@ -50,6 +50,14 @@
     </div>
     <div>
         <h4 class="fw-bold">Current Actual Budget</h4>
+        <select name="project_id" id="project_id" class="form-control text-center my-4">
+            <option value="">All Project</option>
+                {% for project in projects %}
+                    <option value="{{ project.id }}" {% if project.id == project_id %}selected{% endif %}>
+                        {{ project.project }} - {{ project.code }}
+                    </option>
+                {% endfor %}
+        </select>
         <div class="row mb-4">
             {% if(activities|length  === 0)%}
                 <div class="col-md-12">
@@ -78,7 +86,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-light text-center">
-                                <a href="/frontend/report/history" class="btn btn-primary btn-sm">View Details</a>
+                                <a href="/frontend/dashboard/detail/{{ activity['id'] }}" class="btn btn-primary btn-sm">View Details</a>
                             </div>
                         </div>
                     </div>
@@ -86,9 +94,22 @@
             {% endif %}
         </div>
     </div>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="fw-bold">Statistic Budget Actual</h4>
+            <div id="chart"></div>
+        </div>
+    </div>
 </div>
 <script>
     $(document).ready(function() {
+
+        $('#project_id').change(function () {
+            const project_id = $(this).val();
+            window.location.href = `/frontend/dashboard?project_id=${project_id}`
+//             console.log(project_id)
+        })
+
         $('.format-rupiah').each(function () {
             var angka = parseFloat($(this).text().trim());
             if (!isNaN(angka)) {
@@ -100,6 +121,54 @@
                 $(this).text(formatted);
             }
         });
+
+        $.ajax({
+            url: "/frontend/dashboard/data",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+            console.log(response);
+                var options = {
+                    chart: {
+                        type: 'line'
+                    },
+                    series: response.series,
+                    xaxis: {
+                        categories: response.categories
+                    },
+                    yaxis: {
+                        labels: {
+                            formatter: function (value) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(value);
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (value) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(value);
+                            }
+                        }
+                    }
+                };
+
+                var chart = new ApexCharts($("#chart")[0], options);
+                chart.render();
+            },
+            error: function (xhr, status, error) {
+                console.log("Error loading chart data:", error);
+            }
+        });
+
     });
 </script>
+
 {% endblock %}

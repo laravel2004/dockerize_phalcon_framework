@@ -23,6 +23,18 @@
                     </a>
                 </li>
                 <li
+                    <?php if ($routeName == 'absensi-worker') { ?>
+                         class="sidebar-item active"
+                    <?php } else { ?>
+                        class="sidebar-item"
+                    <?php } ?>
+                >
+                    <a href="<?= $this->url->get('/frontend/absensi') ?>" class="sidebar-link">
+                        <i class="bi bi-card-checklist"></i>
+                        <span>Absensi</span>
+                    </a>
+                </li>
+                <li
                     <?php if ($routeName == 'payroll') { ?>
                          class="sidebar-item active"
                     <?php } else { ?>
@@ -43,7 +55,7 @@
                 >
                     <a href="<?= $this->url->get('/frontend/report') ?>" class="sidebar-link">
                         <i class="bi bi-flag-fill"></i>
-                        <span>Report</span>
+                        <span>Activity Input</span>
                     </a>
                 </li>
                 <li
@@ -55,10 +67,86 @@
                 >
                     <a href="<?= $this->url->get('/frontend/report/history') ?>" class="sidebar-link">
                         <i class="bi bi-clock-history"></i>
-                        <span>History</span>
+                        <span>Report Activity</span>
                     </a>
                 </li>
-                <li class="sidebar-title">Setting</li>
+                <li class="sidebar-title">Master</li>
+                <li class="nav-item sidebar-item">
+                        <a class="sidebar-link collapsed" data-bs-toggle="collapse" href="#menuDropdown" aria-expanded="false">
+                            <i class="bi bi-speedometer"></i>
+                            <span>UoM Master</span>
+                        </a>
+                        <ul id="menuDropdown" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                            <li
+                                <?php if ($routeName == 'uom-setting') { ?>
+                                     class="sidebar-item active"
+                                <?php } else { ?>
+                                    class="sidebar-item"
+                                <?php } ?>
+                            >
+                                <a href="<?= $this->url->get('/frontend/uom-setting') ?>" class="sidebar-link">
+                                    <i class="bi bi-speedometer"></i>
+                                    <span>UoM Setting</span>
+                                </a>
+                            </li>
+                            <li
+                                <?php if ($routeName == 'conversion-uom') { ?>
+                                     class="sidebar-item active"
+                                <?php } else { ?>
+                                    class="sidebar-item"
+                                <?php } ?>
+                            >
+                                <a href="<?= $this->url->get('/frontend/conversion-uom') ?>" class="sidebar-link">
+                                    <i class="bi bi-calculator"></i>
+                                    <span>Conversion UoM</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li
+                        <?php if ($routeName == 'material') { ?>
+                             class="sidebar-item active"
+                        <?php } else { ?>
+                            class="sidebar-item"
+                        <?php } ?>
+                    >
+                        <a href="<?= $this->url->get('/frontend/material') ?>" class="sidebar-link">
+                            <i class="bi bi-box"></i>
+                            <span>Material Master</span>
+                        </a>
+                    </li>
+                    <li class="nav-item sidebar-item">
+                        <a class="sidebar-link collapsed" data-bs-toggle="collapse" href="#menuDropdownActivity" aria-expanded="false">
+                            <i class="bi bi-journal-text"></i>
+                            <span>Activity Master</span>
+                        </a>
+                        <ul id="menuDropdownActivity" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                            <li
+                                <?php if ($routeName == 'type-activity') { ?>
+                                     class="sidebar-item active"
+                                <?php } else { ?>
+                                    class="sidebar-item"
+                                <?php } ?>
+                            >
+                                <a href="<?= $this->url->get('/frontend/type-activity') ?>" class="sidebar-link">
+                                    <i class="bi bi-journal-text"></i>
+                                    <span>Type Activity</span>
+                                </a>
+                            </li>
+                            <li
+                                <?php if ($routeName == 'activity-setting') { ?>
+                                     class="sidebar-item active"
+                                <?php } else { ?>
+                                    class="sidebar-item"
+                                <?php } ?>
+                            >
+                                <a href="<?= $this->url->get('/frontend/activity-setting') ?>" class="sidebar-link">
+                                    <i class="bi bi-sliders2-vertical"></i>
+                                    <span>Activity Setting</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 <li
                     <?php if ($routeName == 'budget-activity') { ?>
                          class="sidebar-item active"
@@ -71,42 +159,6 @@
                         <span>Budget Activity</span>
                     </a>
                 </li>
-                <li 
-                    <?php if ($routeName == 'uom-setting') { ?>
-                         class="sidebar-item active"
-                    <?php } else { ?>
-                        class="sidebar-item"
-                    <?php } ?>
-                >
-                    <a href="<?= $this->url->get('/frontend/uom-setting') ?>" class="sidebar-link">
-                        <i class="bi bi-speedometer"></i>
-                        <span>UoM Setting</span>
-                    </a>
-                </li>
-                <li
-                    <?php if ($routeName == 'conversion-uom') { ?>
-                         class="sidebar-item active"
-                    <?php } else { ?>
-                        class="sidebar-item"
-                    <?php } ?>
-                >
-                    <a href="<?= $this->url->get('/frontend/conversion-uom') ?>" class="sidebar-link">
-                        <i class="bi bi-calculator"></i>
-                        <span>Conversion UoM</span>
-                    </a>
-                </li>
-                <li
-                    <?php if ($routeName == 'type-activity') { ?>
-                         class="sidebar-item active"
-                    <?php } else { ?>
-                        class="sidebar-item"
-                    <?php } ?>
-                >
-                    <a href="<?= $this->url->get('/frontend/type-activity') ?>" class="sidebar-link">
-                        <i class="bi bi-journal-text"></i>
-                        <span>Type Activity</span>
-                    </a>
-                </li>
                 <li
                     <?php if ($routeName == 'worker-data') { ?>
                          class="sidebar-item active"
@@ -117,30 +169,6 @@
                     <a href="<?= $this->url->get('/frontend/worker-data') ?>" class="sidebar-link">
                         <i class="bi bi-person"></i>
                         <span>Worker Data</span>
-                    </a>
-                </li>
-                <li
-                    <?php if ($routeName == 'activity-setting') { ?>
-                         class="sidebar-item active"
-                    <?php } else { ?>
-                        class="sidebar-item"
-                    <?php } ?>
-                >
-                    <a href="<?= $this->url->get('/frontend/activity-setting') ?>" class="sidebar-link">
-                        <i class="bi bi-sliders2-vertical"></i>
-                        <span>Activity Setting</span>
-                    </a>
-                </li>
-                <li
-                    <?php if ($routeName == 'material') { ?>
-                         class="sidebar-item active"
-                    <?php } else { ?>
-                        class="sidebar-item"
-                    <?php } ?>
-                >
-                    <a href="<?= $this->url->get('/frontend/material') ?>" class="sidebar-link">
-                        <i class="bi bi-box"></i>
-                        <span>Material</span>
                     </a>
                 </li>
                 <li class="sidebar-title">Project & Plot</li>

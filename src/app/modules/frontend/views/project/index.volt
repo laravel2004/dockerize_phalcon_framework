@@ -40,7 +40,7 @@
                                 <td>{{ project.wide }} Hectare</td>
                                 <td>
                                     <button class="btn btn-warning btn-sm edit-btn" data-id="{{ project.id }}" data-project="{{ project.project }}" data-code="{{ project.code }}" >Edit</button>
-                                    <button class="btn btn-danger btn-sm delete-btn" data-id="{{ project.id }}">Delete</button>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="{{ project.id }}">Inactive</button>
                                 </td>
                             </tr>
                             {% endfor %}

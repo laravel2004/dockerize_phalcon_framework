@@ -38,7 +38,7 @@
 <div class="container my-4">
     <div class="card shadow-sm p-4">
         <div class="text-center mb-3">
-            <h5 class="fw-bold">Detail Aktifitas Tebu Sendiri <span class="text-danger">FTM-45828</span></h5>
+            <h5 class="fw-bold">Detail Aktifitas Tebu Sendiri</h5>
         </div>
         <div class="border p-4" id="print-area">
             <div class="d-flex justify-content-between align-items-center">

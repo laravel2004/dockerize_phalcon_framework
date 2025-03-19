@@ -6,7 +6,7 @@
         <div class="card-body">
             <div class="row justify-content-between">
                 <div class="col-4">
-                    <a href="/frontend/report" class="btn btn-primary fw-semibold">+ Create Report</a>
+                    <a href="/frontend/report" class="btn btn-primary fw-semibold">+ Create Activity Input</a>
                 </div>
                 <div class="col-8 text-end">
                     <button  id="btn-summarize" class="btn btn-success fw-semibold">Summarize</button>
@@ -74,7 +74,23 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="{{ url('/frontend/report/detail/') ~ activityLog.id }}" class="btn btn-primary ms-3">Detail</a>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                          Action
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% set imagePaths = activityLog.image|json_decode %}
+                                            <li class="dropdown-item">
+                                                {% if imagePaths|length > 0 %}
+                                                    <button class="btn btn-secondary w-100" id="btnAddModal" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo='{{ imagePaths|json_encode }}'>See Photo</button>
+                                                {% else %}
+                                                    <span class="text-muted text-center">No Image</span>
+                                                {% endif %}
+                                            </li>
+                                            <li class="dropdown-item"><a href="{{ url('/frontend/report/detail/') ~ activityLog.id }}" class="btn btn-warning w-100">Detail</a></li>
+                                            <li class="dropdown-item"><button data-id={{ activityLog.id }} class="btn-delete btn btn-danger w-100">Delete</button></li>
+                                        </ul>
+                                      </div>
                                 </div>
                             </div>
                         </div>
@@ -86,8 +102,90 @@
     </div>
 </div>
 
+<!-- Modal for Adding/Editing UoM -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="addUomModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUomModalLabel">Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <div class="container">
+                    <div class="row justify-content-center flex-wrap" id="photoContainer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 $(document).ready(function () {
+
+        $('#photoModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var photoData = button.data('photo');
+            var photoContainer = $('#photoContainer');
+            photoContainer.empty();
+
+            try {
+                if (Array.isArray(photoData) && photoData.length > 0) {
+                    photoData.forEach(function(photo) {
+                        var colDiv = $('<div>').addClass('col-6 col-md-4 d-flex justify-content-center mb-3');
+                        var imgElement = $('<img>').attr('src', `/${photo}`)
+                            .addClass('img-fluid')
+                            .css({
+                                'width': '300px',
+                                'height': '300px',
+                                'object-fit': 'cover',
+                                'border': '4px solid #000',
+                                'border-radius': '8px'
+                            });
+                        colDiv.append(imgElement);
+                        photoContainer.append(colDiv);
+                    });
+
+                    if (photoData.length < 3) {
+                        photoContainer.addClass('justify-content-center');
+                    } else {
+                        photoContainer.removeClass('justify-content-center');
+                    }
+                } else {
+                    photoContainer.append('<p class="text-center">No images available</p>');
+                }
+            } catch (e) {
+                photoContainer.append('<p class="text-center">Invalid image data</p>');
+            }
+        });
+
+        $('#btnAddModal').click(function() {
+            const data = $(this).data('photo');
+            console.log(data)
+        });
+
+        $('.btn-delete').click(function() {
+            let id = $(this).data('id');
+            Swal.fire({
+                title: 'Are you sure?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/frontend/report/delete/${id}`,
+                        type: 'DELETE',
+                        success: function(response) {
+                            Swal.fire('Deleted!', response.message, 'success').then(() => location.reload());
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error', xhr.responseJSON.message, 'error');
+                        }
+                    });
+                }
+            });
+        });
 
     $('#project_id').change(function () {
         var projectId = $(this).val();

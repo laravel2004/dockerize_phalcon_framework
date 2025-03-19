@@ -11,8 +11,8 @@ class PayrollController extends Controller
 {
     public function indexAction()
     {
-        $this->view->title = 'Manage Payroll';
-        $this->view->subtitle = 'List of Payroll';
+        $this->view->title = ' Payroll Management';
+        $this->view->subtitle = '';
         $this->view->routeName = "payroll";
 
         $status = $this->request->getQuery("status", "string", null);

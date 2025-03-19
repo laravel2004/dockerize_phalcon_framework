@@ -10,6 +10,9 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="<?= $this->security->getToken() ?>">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 </head>
 
 <body>
@@ -71,7 +74,7 @@
                                 <td><?= $project->wide ?> Hectare</td>
                                 <td>
                                     <button class="btn btn-warning btn-sm edit-btn" data-id="<?= $project->id ?>" data-project="<?= $project->project ?>" data-code="<?= $project->code ?>" >Edit</button>
-                                    <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $project->id ?>">Delete</button>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $project->id ?>">Inactive</button>
                                 </td>
                             </tr>
                             <?php $v101669741761047984571incr++; } ?>

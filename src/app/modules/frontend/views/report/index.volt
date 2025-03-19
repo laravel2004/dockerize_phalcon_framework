@@ -99,16 +99,28 @@
                     </div>
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Plot</label>
+                    <label class="form-label">Project & Plot</label>
                     <div id="plotContainer">
-                        <div class="input-group mb-2">
-                            <select name="plot_id[]" class="form-select" required>
-                                <option value="">Select Plot</option>
-                                {% for plot in plots %}
-                                    <option value="{{ plot.id }}">{{ plot.code }} [{{ plot.project.project }}]</option>
-                                {% endfor %}
-                            </select>
-                            <button type="button" class="btn btn-success addPlot">+</button>
+                        <div class="input-group plot-clone row mb-2">
+                            <div class="col-4">
+                                <select id="project_id" name="project_id[]" class="form-select" required>
+                                    <option value="">Select Project</option>
+                                    {% for project in projects %}
+                                        <option value="{{ project.id }}">{{ project.project }} [{{ project.code }}]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <select name="plot_id[]" class="form-select" required>
+                                        <option value="">Select Plot</option>
+                                        {% for plot in plots %}
+                                            <option value="{{ plot.id }}">{{ plot.code }} [{{ plot.project.project }}]</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn btn-success addPlot">+</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -221,14 +233,45 @@
             }
         });
 
+        function fetchPlots(projectId, plotSelect) {
+            $.ajax({
+                url: `/frontend/report/search-project/${projectId}`,
+                method: 'GET',
+                success: function(response) {
+                    plotSelect.empty().append('<option value="">Select Plot</option>');
+                    response.plots.forEach(plot => {
+                        plotSelect.append(`<option value="${plot.id}">${plot.code}</option>`);
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch plots.',
+                    });
+                }
+            });
+        }
+
+        $(document).on('change', '[name="project_id[]"]', function() {
+            let projectId = $(this).val();
+            let plotSelect = $(this).closest('.plot-clone').find('[name="plot_id[]"]');
+            if (projectId) {
+                fetchPlots(projectId, plotSelect);
+            } else {
+                plotSelect.empty().append('<option value="">Select Plot</option>');
+            }
+        });
+
         $(document).on('click', '.addPlot', function() {
-            let plotSelect = $(this).closest('.input-group').clone();
-            plotSelect.find('button').removeClass('btn-success addPlot').addClass('btn-danger removePlot').text('-');
-            $('#plotContainer').append(plotSelect);
+            let plotClone = $(this).closest('.plot-clone').clone();
+            plotClone.find('button').removeClass('btn-success addPlot').addClass('btn-danger removePlot').text('-');
+            plotClone.find('select').val('');
+            $('#plotContainer').append(plotClone);
         });
 
         $(document).on('click', '.removePlot', function() {
-            $(this).closest('.input-group').remove();
+            $(this).closest('.plot-clone').remove();
         });
 
         $(document).on('click', '.addWorker', function() {

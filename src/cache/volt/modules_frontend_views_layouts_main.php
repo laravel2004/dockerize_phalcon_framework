@@ -1,4 +1,4 @@
-a:3:{i:0;s:1640:"<!DOCTYPE html>
+a:3:{i:0;s:1709:"<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -13,6 +13,7 @@ a:3:{i:0;s:1640:"<!DOCTYPE html>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 
 <body>
@@ -35,8 +36,8 @@ a:3:{i:0;s:1640:"<!DOCTYPE html>
                     </div>
                 </div>
                 ";s:7:"content";a:3:{i:0;a:4:{s:4:"type";i:357;s:5:"value";s:22:"
-                    ";s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:38;}i:1;a:4:{s:4:"type";i:359;s:4:"expr";a:4:{s:4:"type";i:350;s:4:"name";a:4:{s:4:"type";i:265;s:5:"value";s:7:"content";s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:38;}s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:38;}s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:39;}i:2;a:4:{s:4:"type";i:357;s:5:"value";s:18:"
-                ";s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:39;}}i:1;s:203:"
+                    ";s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:39;}i:1;a:4:{s:4:"type";i:359;s:4:"expr";a:4:{s:4:"type";i:350;s:4:"name";a:4:{s:4:"type";i:265;s:5:"value";s:7:"content";s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:39;}s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:39;}s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:40;}i:2;a:4:{s:4:"type";i:357;s:5:"value";s:18:"
+                ";s:4:"file";s:58:"/var/www/html/app/modules/frontend/views/layouts/main.volt";s:4:"line";i:40;}}i:1;s:203:"
             </div>
             <?= $this->partial('components/footer') ?>
         </div>
