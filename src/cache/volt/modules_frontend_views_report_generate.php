@@ -75,6 +75,7 @@
 </style>
 
 <div class="container my-4">
+    <for
     <div class="card shadow-sm p-4" id="print-area">
         <div class="text-center mb-3">
             <h5 class="fw-bold">REKAP KEGIATAN LAHAN TS KAULON BIBIT PLANT CANE</h5>

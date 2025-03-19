@@ -58,6 +58,16 @@
             <h5 class="fw-bold">REKAP ABSENSI PEKERJA LAHAN TS KAULON PLANT CANE</h5>
         </div>
         <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <img src="<?= $this->url->get('img/logo.png') ?>" alt="logo" class="img-fluid" style="width: 150px; height:100px;">
+                <h3 class="fw-bold">N1</h3>
+            </div>
+
+            <div class="text-center fw-bold mb-2">
+                <?php if (($dateRange)) { ?>
+                    Periode: <?= $dateRange[0] ?> - <?= $dateRange[1] ?>
+                <?php } ?>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle text-center">
                     <thead class="table-dark">

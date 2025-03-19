@@ -73,5 +73,6 @@ class AbsensiController extends Controller
         $this->view->routeName = "absensi-worker";
         $this->view->setVar('dates', $dates);
         $this->view->setVar('data', $data);
+        $this->view->setVar('dateRange', $dateRange);
     }
 }
