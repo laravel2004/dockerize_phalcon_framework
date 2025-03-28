@@ -101,16 +101,15 @@
                         {% endfor %}
                             <tr>
                                 <th class="text-dark bg-warning" colspan="3">Grand Total</th>
-                                <th class="text-dark bg-warning" colspan="8" class="format-rupiah">{{ totalCost }}</th>
+                                <th class="text-dark bg-warning format-rupiah" colspan="8">{{ totalCost }}</th>
                             </tr>
                             <tr>
                                 <th class="text-dark bg-success" colspan="3">Terbilang</th>
-                                <th class="text-dark bg-success" colspan="8" class="format-rupiah">{{ terbilangTotal }}</th>
+                                <th class="text-dark bg-success" colspan="8">{{ terbilangTotal }}</th>
                             </tr>
                     </tbody>
                 </table>
             </div>
-<!--             <div class="page-break"></div> -->
             <div class="p-4">
                 <div class="row text-center mt-2 justify-content-center">
                     <p class="col-4"><strong>Diajukan oleh:</strong></p>
@@ -152,6 +151,29 @@
                         <p>Plantation Manager</p>
                     </div>
                 </div>
+            </div>
+            <div class="page-break"></div>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                {% for item in data %}
+                    {% for activityLog in item['activityLogs']['activity']  %}
+                        {% if activityLog['image'] is not empty %}
+                            {% set imagePaths = activityLog['image']|json_decode %}
+                            {% if imagePaths|length > 0 %}
+                                    {% for img in imagePaths %}
+                                        <div class="text-center">
+                                             <img src="/{{ img }}" alt="Image" class="img-fluid rounded border shadow-sm"
+                                             style="height: auto; object-fit: cover;">
+                                             <p class="text-secondary">{{ activityLog['plot'] }} ({{ activityLog['start_date'] }})</p>
+                                        </div>
+                                    {% endfor %}
+                            {% else %}
+                                <span class="text-muted">No Image</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">No Image</span>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
             </div>
         </div>
     </div>

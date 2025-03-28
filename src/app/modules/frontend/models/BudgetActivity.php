@@ -27,7 +27,13 @@ class BudgetActivity extends \Phalcon\Mvc\Model
      *
      * @var double
      */
-    public $nominal;
+    public $budget_labor;
+
+    /**
+     *
+     * @var double
+     */
+    public $budget_factor;
 
     /**
      *

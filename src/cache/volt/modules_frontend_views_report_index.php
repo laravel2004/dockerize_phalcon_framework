@@ -107,11 +107,20 @@
     <form id="createReportForm" method="POST" enctype="multipart/form-data">
         <div class="card shadow-sm">
             <div class="card-body">
-                <div class="mb-4">
-                    <label class="form-label">Include Supporting Material</label>
-                    <div class="form-check form-switch">
-                        <input value="on" class="form-check-input" name="is_include" type="checkbox" id="toggleSupportingMaterial">
-                        <label class="form-check-label" for="toggleSupportingMaterial">Yes</label>
+                <div class="mb-4 row">
+                    <div class="col-6">
+                        <label class="form-label">Include Supporting Material</label>
+                        <div class="form-check form-switch">
+                            <input value="on" class="form-check-input" name="is_include" type="checkbox" id="toggleSupportingMaterial">
+                            <label class="form-check-label" for="toggleSupportingMaterial">Yes</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Piecework Worker</label>
+                        <div class="form-check form-switch">
+                            <input value="on" class="form-check-input" name="is_piece" type="checkbox" id="toggleIsPiece">
+                            <label class="form-check-label" for="toggleIsPiece">Yes</label>
+                        </div>
                     </div>
                 </div>
                 <div class="mb-4">
@@ -179,6 +188,7 @@
                                     <option value="<?= $worker->id ?>"><?= $worker->name ?></option>
                                 <?php } ?>
                             </select>
+                            <input id="workerNeeded" type="number" name="worker_needed[]" step="0.01" class="form-control" placeholder="Length of Work" required>
                             <button type="button" class="btn btn-success addWorker">+</button>
                         </div>
                     </div>
@@ -265,6 +275,14 @@
                 $('#supportingMaterialCard').show();
             } else {
                 $('#supportingMaterialCard').hide();
+            }
+        });
+
+        $('#toggleIsPiece').change(function() {
+            if ($(this).is(':checked')) {
+                $('#workerNeeded').prop('disabled', true);
+            } else {
+                $('#workerNeeded').prop('disabled', false);
             }
         });
 

@@ -62,6 +62,22 @@
                                         <strong class="text-danger format-rupiah"><?= $activity['actual_cost'] ?></strong>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-1">Budget Labor:</p>
+                                        <strong class="text-success format-rupiah"><?= $activity['budget_cost_activity'] ?></strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-1">Actual Labor:</p>
+                                        <strong class="text-danger format-rupiah"><?= $activity['actual_cost_activity'] ?></strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-1">Budget Factor:</p>
+                                        <strong class="text-success format-rupiah"><?= $activity['budget_cost_material'] ?></strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="mb-1">Actual Factor:</p>
+                                        <strong class="text-danger format-rupiah"><?= $activity['actual_cost_material'] ?></strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <p class="mb-1">Status Budget:</p>
                                         <strong class="text-warning format-rupiah"><?= $activity['status'] ?></strong>
                                     </div>

@@ -14,81 +14,85 @@ class DashboardController extends Controller
 
     public function indexAction()
     {
-        $supportingMaterial = SupportingMaterial::find(["conditions" => "deleted_at IS NULL"])->count();
-        $project = Project::find(["conditions" => "deleted_at IS NULL"])->count();
-        $activityLog = ActivityLog::find(["conditions" => "deleted_at IS NULL"])->count();
+        $supportingMaterial = SupportingMaterial::count(["conditions" => "deleted_at IS NULL"]);
+        $project = Project::count(["conditions" => "deleted_at IS NULL"]);
+        $activityLog = ActivityLog::count(["conditions" => "deleted_at IS NULL"]);
         $project_id = $this->request->getQuery('project_id', 'string', null);
 
-        $conditionActivity = [
-            "deleted_at IS NULL"
-        ];
-
-        $bindActivity = [];
+        $conditionActivity = ["deleted_at IS NULL", "period = :period:"];
+        $bindActivity = ['period' => intval(date('Y'))];
 
         if (!empty($project_id)) {
             $conditionActivity[] = "project_id = :project_id:";
             $bindActivity['project_id'] = $project_id;
         }
 
-        $conditionActivity[] = "period = :period:";
-        $bindActivity['period'] = intval(date('Y'));
-
-        $queryOptionActivity = [];
-
-        if (!empty($conditionActivity)) {
-            $queryOptionActivity["conditions"] = implode(" AND ", $conditionActivity);
-            $queryOptionActivity["bind"] = $bindActivity;
-        }
+        $queryOptionActivity = [
+            "conditions" => implode(" AND ", $conditionActivity),
+            "bind" => $bindActivity
+        ];
 
         $budgetActivity = BudgetActivity::find($queryOptionActivity);
-
         $activities = [];
 
         foreach ($budgetActivity as $activity) {
-            $conditions = [
-                "deleted_at IS NULL"
+            $conditions = ["deleted_at IS NULL", "activity_setting_id = :activity:", "YEAR(start_date) = :year:"];
+            $bind = [
+                "activity" => $activity->activity_setting_id,
+                "year" => intval(date('Y'))
             ];
-            $bind = [];
-
-            $conditions[] = "activity_setting_id = :activity:";
-            $bind["activity"] = $activity->activity_setting_id;
-
-            $conditions[] = "YEAR(start_date) = :year:";
-            $bind["year"] = intval(date('Y'));
 
             $queryOptions = [
+                "conditions" => implode(" AND ", $conditions),
+                "bind" => $bind,
                 "order" => "created_at DESC"
             ];
-
-            if (!empty($conditions)) {
-                $queryOptions["conditions"] = implode(" AND ", $conditions);
-                $queryOptions["bind"] = $bind;
-            }
 
             $activitiesLog = ActivityLog::find($queryOptions);
 
             $actualBudget = 0;
+            $actualBudgetActivity = 0;
+            $actualBudgetMaterial = 0;
 
             foreach ($activitiesLog as $log) {
-                if (!empty($project_id)) {
-                    if ($project_id == $log->plot->project_id) {
-                        $actualBudget += $log->total_cost;
+                if (isset($log->plot)) {
+                    if (!empty($project_id) && $project_id != $log->plot->project_id) {
+                        continue;
                     }
-                } else {
+
                     $actualBudget += $log->total_cost;
+                    $material = 0;
+
+                    if (isset($log->supportingMaterials)) {
+                        foreach ($log->supportingMaterials as $sp) {
+                            $material += $sp->material->price * $sp->item_needed;
+                        }
+                    }
+
+                    $actualBudgetMaterial += $material;
+                    $actualBudgetActivity += $log->total_cost - $material;
                 }
             }
 
-            $activityName = $activity->activitySetting->name;
+            $activityName = $activity->activitySetting->name ?? 'Unknown Activity';
 
             if (isset($activities[$activityName])) {
-                $activities[$activityName]['budget_cost'] += $activity->nominal;
+                $activities[$activityName]['budget_cost'] += $activity->budget_labor + $activity->budget_factor;
+                $activities[$activityName]['actual_cost'] += $actualBudget;
+                $activities[$activityName]['budget_cost_activity'] += $activity->budget_labor;
+                $activities[$activityName]['budget_cost_material'] += $activity->budget_factor;
+                $activities[$activityName]['actual_cost_activity'] += $actualBudgetActivity;
+                $activities[$activityName]['actual_cost_material'] += $actualBudgetMaterial;
             } else {
                 $activities[$activityName] = [
                     'id' => $activity->id,
                     'activity_setting_name' => $activityName,
-                    'budget_cost' => $activity->nominal,
+                    'budget_cost' => $activity->budget_labor + $activity->budget_factor,
+                    'budget_cost_activity' => $activity->budget_labor,
+                    'budget_cost_material' => $activity->budget_factor,
                     'actual_cost' => $actualBudget,
+                    'actual_cost_activity' => $actualBudgetActivity,
+                    'actual_cost_material' => $actualBudgetMaterial,
                     'status' => 'On Budget'
                 ];
             }
@@ -104,16 +108,18 @@ class DashboardController extends Controller
             'conditions' => 'deleted_at IS NULL',
         ]);
 
-        $this->view->setVar('projects', $projects);
+        $this->view->setVars([
+            'projects' => $projects,
+            'project' => $project,
+            'supportingMaterial' => $supportingMaterial,
+            'activityLog' => $activityLog,
+            'activities' => $activities,
+            'project_id' => $project_id,
+        ]);
+
         $this->view->title = 'Dashboard';
         $this->view->subtitle = 'Welcome to Admin Dashboard';
         $this->view->routeName = "dashboard";
-        $this->view->setVar('project', $project);
-        $this->view->setVar('supportingMaterial', $supportingMaterial);
-        $this->view->setVar('activityLog', $activityLog);
-        $this->view->setVar('activities', $activities);
-        $this->view->setVar('project_id', $project_id);
-
     }
 
     public function detailAction($id)
@@ -145,18 +151,35 @@ class DashboardController extends Controller
             ]);
 
             $total_cost = 0;
+            $actualBudgetActivity = 0;
+            $actualBudgetMaterial = 0;
             foreach ($activityLogs as $activityLog) {
                 $total_cost += $activityLog->total_cost;
+                $material = 0;
+
+                if (isset($activityLog->supportingMaterials)) {
+                    foreach ($activityLog->supportingMaterials as $sp) {
+                        $material += $sp->material->price * $sp->item_needed;
+                    }
+                }
+
+                $actualBudgetMaterial += $material;
+                $actualBudgetActivity += $activityLog->total_cost - $material;
             }
 
-            $budget = $budgetActivity->nominal * $plot->wide / $total_wide;
+            $budgetLabor = $budgetActivity->budget_labor * $plot->wide / $total_wide;
+            $budgetFactor = $budgetActivity->budget_factor * $plot->wide / $total_wide;
             $data[] = [
                 "id" => $plot->id,
                 "plot_code" => $plot->code,
-                'budget_cost' => $budget,
+                'budget_cost' => $budgetLabor + $budgetFactor,
+                'budget_cost_activity' => $budgetLabor,
+                'budget_cost_material' => $budgetFactor,
+                'actual_cost_activity' => $actualBudgetActivity,
+                'actual_cost_material' => $actualBudgetMaterial,
                 'actual_cost' => $total_cost,
                 "wide" => $plot->wide,
-                "status" => $budget > $total_cost ? "On Budget" : "Over Budget"
+                "status" => $budgetLabor + $budgetFactor > $total_cost ? "On Budget" : "Over Budget"
             ];
         }
 

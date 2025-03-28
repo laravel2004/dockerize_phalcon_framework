@@ -30,7 +30,8 @@
                             <th>Project</th>
                             <th>Activity Name</th>
                             <th>Period</th>
-                            <th>Nominal</th>
+                            <th>Nominal Labor</th>
+                            <th>Nominal Factor</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -46,7 +47,8 @@
                                 <td>{{ budgetActivity.project_name }}</td>
                                 <td>{{ budgetActivity.activity_name }}</td>
                                 <td>{{ budgetActivity.period }}</td>
-                                <td class="format-rupiah">{{ budgetActivity.nominal }}</td>
+                                <td class="format-rupiah">{{ budgetActivity.budget_labor }}</td>
+                                <td class="format-rupiah">{{ budgetActivity.budget_factor }}</td>
                                 <td>
                                     <button class="btn btn-danger  btn-sm delete-btn" data-id="{{ budgetActivity.id }}">Delete</button>
                                 </td>
@@ -123,10 +125,18 @@
 
                     <!-- Nominal Field -->
                     <div class="mb-3">
-                        <label for="nominal" class="form-label">Nominal</label>
+                        <label for="budget_labor" class="form-label">Budget Labor</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
-                            <input name="nominal" type="text" class="form-control" id="nominal" required>
+                            <input name="budget_labor" type="text" class="form-control" id="nominal" required>
+                        </div>
+                    </div>
+                    <!-- Nominal Field -->
+                    <div class="mb-3">
+                        <label for="budget_factor" class="form-label">Budget Factor</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input name="budget_factor" type="text" class="form-control" id="nominal" required>
                         </div>
                     </div>
 

@@ -44,8 +44,15 @@
                     <a href="/frontend/report" class="btn btn-primary fw-semibold">+ Create Activity Input</a>
                 </div>
                 <div class="col-8 text-end">
-                    <button  id="btn-summarize" class="btn btn-success fw-semibold">Summarize</button>
-                    <button  id="btn-generate" class="btn btn-warning text-white fw-semibold">Generate Report</button>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Reporting
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><button  id="btn-summarize" class="btn btn-success fw-semibold w-100">Summarize</button></li>
+                            <li class="dropdown-item"><button  id="btn-generate" class="btn btn-warning text-white fw-semibold w-100">Generate Report</button></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <form method="GET" action="/frontend/report/history">
@@ -125,7 +132,7 @@
                                             <li class="dropdown-item"><a href="<?= $this->url->get('/frontend/report/detail/') . $activityLog->id ?>" class="btn btn-warning w-100">Detail</a></li>
                                             <li class="dropdown-item"><button data-id=<?= $activityLog->id ?> class="btn-delete btn btn-danger w-100">Delete</button></li>
                                         </ul>
-                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

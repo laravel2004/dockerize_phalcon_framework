@@ -51,6 +51,8 @@ class ReportController extends Controller
             $worker_id = $this->request->getPost('worker_id', 'array', []);
             $supporting_material_id = $this->request->getPost('supporting_material_id', 'array', []);
             $item_needed = $this->request->getPost('item_needed', 'array', []);
+            $worker_needed = $this->request->getPost('worker_needed', 'array', []);
+            $is_piece = $this->request->getPost('is_piece') === 'on';
 
             if (empty($activity_setting_id) || empty($plot_id) || empty($worker_id)) {
                 return $this->response->setJsonContent([
@@ -59,7 +61,6 @@ class ReportController extends Controller
                 ]);
             }
 
-            // Konversi tanggal
             $startDateTime = strtotime($start_date);
             $endDateTime = strtotime($end_date);
             if (!$startDateTime || !$endDateTime) {
@@ -73,7 +74,6 @@ class ReportController extends Controller
 
             $this->db->begin();
 
-            // Proses upload file
             $imagePaths = [];
             foreach ($this->request->getUploadedFiles() as $imageFile) {
                 if ($imageFile->isUploadedFile()) {
@@ -88,7 +88,6 @@ class ReportController extends Controller
                 }
             }
 
-            // Validasi ActivitySetting dan TypeActivity
             $activitySetting = ActivitySetting::findFirstById($activity_setting_id);
             if (!$activitySetting) {
                 return $this->response->setJsonContent([
@@ -105,7 +104,6 @@ class ReportController extends Controller
                 ]);
             }
 
-            // Hitung total width
             $totalWidth = 0;
             foreach ($plot_id as $p) {
                 $plot = Plot::findFirstById($p);
@@ -114,7 +112,6 @@ class ReportController extends Controller
                 }
             }
 
-            // Cek agar tidak terjadi pembagian dengan nol
             if ($totalWidth == 0) {
                 return $this->response->setJsonContent([
                     'status' => 'error',
@@ -122,47 +119,62 @@ class ReportController extends Controller
                 ]);
             }
 
-            foreach ($plot_id as $p) {
-                $plot = Plot::findFirstById($p);
-                if (!$plot) {
-                    continue;
-                }
+            $totalOfWorkData = 0;
+            foreach ($worker_needed as $worker) {
+                $totalOfWorkData += $worker;
+            }
 
-                $timeOfWorkPerPlot = $timeOfWork * ($plot->wide / $totalWidth);
-                $activityLog = new ActivityLog();
-                $activityLog->activity_setting_id = $activity_setting_id;
-                $activityLog->description = $description;
-                $activityLog->time_of_work = $timeOfWorkPerPlot;
-                $activityLog->cost = $cost->cost * $timeOfWorkPerPlot;
-                $activityLog->total_worker = count($worker_id);
-                $activityLog->total_cost = $cost->cost * $timeOfWorkPerPlot * count($worker_id);
-                $activityLog->plot_id = $p;
-                $activityLog->image = json_encode($imagePaths);
-                $activityLog->start_date = $start_date;
-                $activityLog->end_date = $end_date;
-
-                if (!$activityLog->save()) {
-                    $this->db->rollback();
-                    return $this->response->setJsonContent([
-                        'status' => 'error',
-                        'message' => 'Failed to save activity log'
-                    ]);
-                }
-
-                foreach ($worker_id as $w) {
-                    $worker = WorkerData::findFirstById($w);
-                    if (!$worker) {
+            if ($is_piece) {;
+                foreach ($plot_id as $p) {
+                    $plot = Plot::findFirstById($p);
+                    if (!$plot) {
                         continue;
                     }
 
-                    $payroll = new Payroll();
-                    $payroll->worker_data_id = $w;
-                    $payroll->activity_log_id = $activityLog->id;
-                    $payroll->cost = $cost->cost;
-                    $payroll->date = $start_date;
-                    $payroll->unit = $timeOfWorkPerPlot;
-                    $payroll->total_cost = $cost->cost * $timeOfWorkPerPlot;
-                    $payroll->status = 0;
+                    $timeOfWorkPerPlot = $totalOfWorkData == 0 ? 1 : $totalOfWorkData * ($plot->wide / $totalWidth);
+                    $activityLog = new ActivityLog();
+                    $activityLog->activity_setting_id = $activity_setting_id;
+                    $activityLog->description = $description;
+                    $activityLog->time_of_work = $timeOfWorkPerPlot  * ($plot->wide / $totalWidth);
+                    $activityLog->cost = $cost->cost * $timeOfWorkPerPlot;
+                    $activityLog->total_worker = count($worker_id);
+                    $activityLog->total_cost = $cost->cost * $plot->wide;
+                    $activityLog->plot_id = $p;
+                    $activityLog->image = json_encode($imagePaths);
+                    $activityLog->start_date = $start_date;
+                    $activityLog->end_date = $end_date;
+
+                    if (!$activityLog->save()) {
+                        $this->db->rollback();
+                        return $this->response->setJsonContent([
+                            'status' => 'error',
+                            'message' => 'Failed to save activity log'
+                        ]);
+                    }
+
+                    foreach ($worker_id as $index => $w) {
+                        $worker = WorkerData::findFirstById($w);
+                        if (!$worker) {
+                            continue;
+                        }
+
+                        $payroll = new Payroll();
+                        $payroll->worker_data_id = $w;
+                        $payroll->activity_log_id = $activityLog->id;
+                        $payroll->cost = $cost->cost * $totalWidth ;
+                        $payroll->date = $start_date;
+                        $payroll->unit = 1 / count($worker_id);
+                        $payroll->total_cost = $cost->cost * $plot->wide * 1 / count($worker_id);
+                        $payroll->status = 0;
+
+                        if (!$payroll->save()) {
+                            $this->db->rollback();
+                            return $this->response->setJsonContent([
+                                'status' => 'error',
+                                'message' => $payroll->getMessages()
+                            ]);
+                        }
+                    }
 
                     if (!$payroll->save()) {
                         $this->db->rollback();
@@ -171,67 +183,175 @@ class ReportController extends Controller
                             'message' => $payroll->getMessages()
                         ]);
                     }
-                }
 
-                if (!$payroll->save()) {
-                    $this->db->rollback();
-                    return $this->response->setJsonContent([
-                        'status' => 'error',
-                        'message' => $payroll->getMessages()
-                    ]);
-                }
+                    if ($is_include) {
+                        foreach ($supporting_material_id as $index => $sp) {
+                            $material = Material::findFirstById($sp);
+                            if (!$material) {
+                                continue;
+                            }
 
-                if ($is_include) {
-                    foreach ($supporting_material_id as $index => $sp) {
-                        $material = Material::findFirstById($sp);
-                        if (!$material) {
+                            if ($material->stock < $item_needed[$index]) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Insufficient stock for ' . $material->name
+                                ]);
+                            }
+
+                            $needed = ($plot->wide / $totalWidth) * $item_needed[$index] ?? 0;
+                            $supportingMaterial = new SupportingMaterial();
+                            $supportingMaterial->material_id = $sp;
+                            $supportingMaterial->activity_log_id = $activityLog->id;
+                            $supportingMaterial->date = $start_date;
+                            $supportingMaterial->plot_id = $p;
+                            $supportingMaterial->item_needed = $needed;
+                            $supportingMaterial->uom = $material->uom;
+                            $supportingMaterial->conversion_of_uom_item = $material->conversion_uom->conversion ?? 1;
+                            $supportingMaterial->image = json_encode($imagePaths);
+
+                            if (!$supportingMaterial->save()) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Failed to save supporting material'
+                                ]);
+                            }
+
+                            $activityLog->total_cost += $supportingMaterial->material->price * $needed;
+
+                            if (!$activityLog->save()) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Failed to save activity log'
+                                ]);
+                            }
+
+                            $material->stock -= $needed;
+                            if (!$material->save()) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Failed to update stock'
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                foreach ($plot_id as $p) {
+                    $plot = Plot::findFirstById($p);
+                    if (!$plot) {
+                        continue;
+                    }
+
+                    $timeOfWorkPerPlot = $totalOfWorkData == 0 ? 1 : $totalOfWorkData * ($plot->wide / $totalWidth);
+                    $activityLog = new ActivityLog();
+                    $activityLog->activity_setting_id = $activity_setting_id;
+                    $activityLog->description = $description;
+                    $activityLog->time_of_work = $timeOfWorkPerPlot;
+                    $activityLog->cost = $cost->cost * $timeOfWorkPerPlot;
+                    $activityLog->total_worker = count($worker_id);
+                    $activityLog->total_cost = $cost->cost * $timeOfWorkPerPlot;
+                    $activityLog->plot_id = $p;
+                    $activityLog->image = json_encode($imagePaths);
+                    $activityLog->start_date = $start_date;
+                    $activityLog->end_date = $end_date;
+
+                    if (!$activityLog->save()) {
+                        $this->db->rollback();
+                        return $this->response->setJsonContent([
+                            'status' => 'error',
+                            'message' => 'Failed to save activity log'
+                        ]);
+                    }
+
+                    foreach ($worker_id as $index => $w) {
+                        $worker = WorkerData::findFirstById($w);
+                        if (!$worker) {
                             continue;
                         }
 
-                        if ($material->stock < $item_needed[$index]) {
+                        $payroll = new Payroll();
+                        $payroll->worker_data_id = $w;
+                        $payroll->activity_log_id = $activityLog->id;
+                        $payroll->cost = $cost->cost;
+                        $payroll->date = $start_date;
+                        $payroll->unit = $timeOfWorkPerPlot * $worker_needed[$index];
+                        $payroll->total_cost = $cost->cost * $timeOfWorkPerPlot * $worker_needed[$index];
+                        $payroll->status = 0;
+
+                        if (!$payroll->save()) {
                             $this->db->rollback();
                             return $this->response->setJsonContent([
                                 'status' => 'error',
-                                'message' => 'Insufficient stock for ' . $material->name
+                                'message' => $payroll->getMessages()
                             ]);
                         }
+                    }
 
-                        $needed = ($plot->wide / $totalWidth) * $item_needed[$index] ?? 0;
-                        $supportingMaterial = new SupportingMaterial();
-                        $supportingMaterial->material_id = $sp;
-                        $supportingMaterial->activity_log_id = $activityLog->id;
-                        $supportingMaterial->date = $start_date;
-                        $supportingMaterial->plot_id = $p;
-                        $supportingMaterial->item_needed = $needed;
-                        $supportingMaterial->uom = $material->uom;
-                        $supportingMaterial->conversion_of_uom_item = $material->conversion_uom->conversion ?? 1;
-                        $supportingMaterial->image = json_encode($imagePaths);
+                    if (!$payroll->save()) {
+                        $this->db->rollback();
+                        return $this->response->setJsonContent([
+                            'status' => 'error',
+                            'message' => $payroll->getMessages()
+                        ]);
+                    }
 
-                        if (!$supportingMaterial->save()) {
-                            $this->db->rollback();
-                            return $this->response->setJsonContent([
-                                'status' => 'error',
-                                'message' => 'Failed to save supporting material'
-                            ]);
-                        }
+                    if ($is_include) {
+                        foreach ($supporting_material_id as $index => $sp) {
+                            $material = Material::findFirstById($sp);
+                            if (!$material) {
+                                continue;
+                            }
 
-                        $activityLog->total_cost += $supportingMaterial->material->price * $needed;
+                            if ($material->stock < $item_needed[$index]) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Insufficient stock for ' . $material->name
+                                ]);
+                            }
 
-                        if (!$activityLog->save()) {
-                            $this->db->rollback();
-                            return $this->response->setJsonContent([
-                                'status' => 'error',
-                                'message' => 'Failed to save activity log'
-                            ]);
-                        }
+                            $needed = ($plot->wide / $totalWidth) * $item_needed[$index] ?? 0;
+                            $supportingMaterial = new SupportingMaterial();
+                            $supportingMaterial->material_id = $sp;
+                            $supportingMaterial->activity_log_id = $activityLog->id;
+                            $supportingMaterial->date = $start_date;
+                            $supportingMaterial->plot_id = $p;
+                            $supportingMaterial->item_needed = $needed;
+                            $supportingMaterial->uom = $material->uom;
+                            $supportingMaterial->conversion_of_uom_item = $material->conversion_uom->conversion ?? 1;
+                            $supportingMaterial->image = json_encode($imagePaths);
 
-                        $material->stock -= $needed;
-                        if (!$material->save()) {
-                            $this->db->rollback();
-                            return $this->response->setJsonContent([
-                                'status' => 'error',
-                                'message' => 'Failed to update stock'
-                            ]);
+                            if (!$supportingMaterial->save()) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Failed to save supporting material'
+                                ]);
+                            }
+
+                            $activityLog->total_cost += $supportingMaterial->material->price * $needed;
+
+                            if (!$activityLog->save()) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Failed to save activity log'
+                                ]);
+                            }
+
+                            $material->stock -= $needed;
+                            if (!$material->save()) {
+                                $this->db->rollback();
+                                return $this->response->setJsonContent([
+                                    'status' => 'error',
+                                    'message' => 'Failed to update stock'
+                                ]);
+                            }
                         }
                     }
                 }
@@ -621,10 +741,13 @@ class ReportController extends Controller
 
                 $activity[] = [
                     'name' => $activityLog->activitySetting->name,
+                    'start_date' => $activityLog->start_date,
+                    'end_date' => $activityLog->end_date,
                     'cost' => $activityLog->activitySetting->typeActivity->cost,
                     'plot' => $plot['code'],
                     'project_code' => $projectCode,
                     'unit' => $activityLog->time_of_work,
+                    'image' => $activityLog->image,
                     'uom' => 'Hari',
                     'worker' => $activityLog->total_worker,
                     'date' => $activityLog->start_date,
