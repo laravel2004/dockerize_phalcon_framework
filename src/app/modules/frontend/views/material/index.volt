@@ -35,8 +35,8 @@
                         <tr>
                             <td>{{ loop.index + ((page.current - 1) * page.limit) }}</td>
                             <td>{{ material.name }}</td>
-                            <td>{{ material.stock }}</td>
-                            <td class="format-rupiah">{{ material.price }}</td>
+                            <td>{{ material.stock }} {{ material.conversion_uom.uom_end.name }}</td>
+                            <td ><span class="format-rupiah" >{{ material.price }}</span>/{{ material.conversion_uom.uom_end.name }}</td>
                             <td>{{ material.uom }}</td>
                             <td>
                                 <button class="btn btn-warning btn-sm edit-btn"
@@ -105,11 +105,11 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Price</label>
+                        <label class="form-label">Price (Price/UoM)</label>
                         <input placeholder="Enter Price" name="price" type="number" class="form-control" id="materialPrice" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Stock</label>
+                        <label class="form-label">Stock (Large UoM) </label>
                         <input placeholder="Enter stock" name="stock" type="number" class="form-control" id="materialStock" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>

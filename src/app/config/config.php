@@ -12,8 +12,8 @@ return new \Phalcon\Config\Config([
     'database' => [
         'adapter'  => 'Mysql',
         'host'     => '172.27.208.1',
-        'username' => 'test',
-        'password' => 'test',
+        'username' => 'testall',
+        'password' => 'testall',
         'dbname'   => 'erp_rmi',
         'charset'  => 'utf8',
     ],

@@ -63,6 +63,8 @@ class MaterialController extends Controller
     public function editAction($id)
     {
         $uomSetting = Material::findFirstById($id);
+        $uomSetting->stock = $uomSetting->stock / $uomSetting->conversion_uom->conversion;
+        $uomSetting->price = $uomSetting->price * $uomSetting->conversion_uom->conversion;
         $this->view->setVar('uomSetting', $uomSetting);
     }
 
@@ -121,10 +123,10 @@ class MaterialController extends Controller
 
 
                 $material->name = $name;
-                $material->stock = $stock;
+                $material->stock = $stock *  $uomSetting->conversion; ;
                 $material->uom = $uomSetting->name;
                 $material->conversion_uom_id = $conversion_uom_id;
-                $material->price = $price;
+                $material->price = $price / $uomSetting->conversion;
 
                 if (!$material->save()) {
                     $errors = [];

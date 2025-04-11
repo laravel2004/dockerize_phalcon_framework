@@ -10,6 +10,10 @@
     <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="<?= $this->security->getToken() ?>">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 
 <body>
@@ -66,8 +70,8 @@
                         <tr>
                             <td><?= $v149528936500298041451loop->index + (($page->current - 1) * $page->limit) ?></td>
                             <td><?= $material->name ?></td>
-                            <td><?= $material->stock ?></td>
-                            <td class="format-rupiah"><?= $material->price ?></td>
+                            <td><?= $material->stock ?> <?= $material->conversion_uom->uom_end->name ?></td>
+                            <td ><span class="format-rupiah" ><?= $material->price ?></span>/<?= $material->conversion_uom->uom_end->name ?></td>
                             <td><?= $material->uom ?></td>
                             <td>
                                 <button class="btn btn-warning btn-sm edit-btn"
@@ -136,11 +140,11 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Price</label>
+                        <label class="form-label">Price (Price/UoM)</label>
                         <input placeholder="Enter Price" name="price" type="number" class="form-control" id="materialPrice" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Stock</label>
+                        <label class="form-label">Stock (Large UoM) </label>
                         <input placeholder="Enter stock" name="stock" type="number" class="form-control" id="materialStock" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
